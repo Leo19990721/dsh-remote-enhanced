@@ -1,0 +1,5 @@
+- insert:
+    - id: native-remote-workspaces
+      name: '@local/dsh-unified-sessions'
+      config:
+        filePreviewTargets: []

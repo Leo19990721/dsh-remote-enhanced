@@ -1,0 +1,96 @@
+# Remote Enhanced
+
+在 DSH 原生工作区列表中并列显示本机和已授权远端电脑的文件夹。打开会话后，请求始终交给会话所属的 Host（运行该会话的电脑），保留各自的草稿和运行状态。切换会话沿用原生界面，不切换 Remote 全局目标、不整页刷新。
+
+首个公开版本为 **0.1.0**，包名保留 `@local/dsh-unified-sessions`，`private: true`。适配版本固定为 **DSH 0.2.2-rc.3、ds-harness-remote 0.6.5**；开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。DSH 或 Remote 升级后，需要重新验证版本适配。
+
+## 安装
+
+从 [v0.1.0 发布页](https://github.com/Leo19990721/dsh-remote-enhanced/releases/tag/v0.1.0) 下载 `dsh-unified-sessions-0.1.0.tgz` 和 `SHA256SUMS.txt`，核对 SHA-256 后，在 DSH 插件管理器填写安装包的绝对路径并启用。以后可从 [Releases](https://github.com/Leo19990721/dsh-remote-enhanced/releases) 获取更新；保留上一版本的安装包，方便回退。
+
+| 电脑 | 需要安装和配置的内容 |
+| --- | --- |
+| 本机：实际打开 DSH 界面的电脑 | DSH 0.2.2-rc.3；先安装并启用 `ds-harness-remote@0.6.5`，再安装并启用本增强包。安装器会根据本包声明安装 `ws`。 |
+| 远端：保存工作区和运行会话的电脑 | DSH 0.2.2-rc.3 和 `ds-harness-remote@0.6.5`；按 Remote 原版流程登录、授权并保持 Host 在线。若要从界面停止远端子 agent，还需在该 Host 安装并启用同版本增强包。基础远端会话访问可仅在本机安装增强包。 |
+| 双向使用 | 如果也要从远端电脑的界面查看其他 Host，在那台电脑上同样安装本增强包。每台电脑分别保存自己的配置。 |
+
+连接继续使用 DSH 官方账号登录、Remote 设备授权、加密传输和原生 owner 权限检查。首次连接在原版 Remote 中完成。增强包不包含账号、密钥、登录缓存、设备登记、会话或作者电脑路径，不修改 DSH 和 Remote 安装文件，也不代替官方认证。
+
+安装包只携带运行时代码、默认配置、说明、许可、语言资源和图标；`ws` 通过包依赖安装。准备离线安装时，需要另外准备包管理器依赖缓存。
+
+## 使用
+
+1. 在原版 Remote 中确认目标 Host 已授权且在线。
+2. 在原生工作区列表中打开带电脑名的文件夹，再打开其 Harness 会话。同名路径按 Host 分开识别。
+3. 使用原生会话、文件侧栏、图片预览和下载入口。远端文件读取、附件上传、会话流按所属 Host 路由。
+4. 预览远端 localhost 网页前，在该远端电脑的 Remote 设置中明确允许对应端口，并启动网页服务。普通网页预览无需配置整理地图文件动作。
+
+下载保存到打开界面的本机电脑。远端文件不能直接交给本机应用打开；先预览或下载，再用本机应用处理。Office 文件预览还需要本机已有的 DSH Office 转换服务；服务不可用时可下载原文件。
+
+展开侧栏后，工作区列表顶部的“Remote 自检”可检查本机版本和已授权电脑目录，再点击单台电脑的检查按钮，确认其连接及终端能力。版本不匹配、电脑离线、请求限流、连接超时或授权失效会分别给出处理提示。打开该电脑的会话后再次检查，还可读取子会话停止命令是否已安装；缺少远端版本信息或未检查的项目会显示“未确认”。自检不会发送消息、执行命令、创建会话、更改远端设置或切换全局目标；认证缓存由原版 Remote 按正常连接流程维护。
+
+工具 `remote_workspaces` 复用同一套检查：`selfCheck` 不带 `hostId` 时只读安装和设备目录；带 `hostId` 时仅检查该授权电脑；可选的已有 `sessionId` 只用于读取该会话可用的命令目录。`diagnostics` 提供连接状态及固定分类的处理建议。`resourceCheck` 只返回资源类型、大小、授权、状态和传输完成信息，不返回文件正文、网页正文或响应头。
+
+## 配置
+
+[默认配置](./cordis.patch.yml) 的 `filePreviewTargets` 为 `[]`，不预设 Host、端口或本机路径。profile 目录由当前 DSH 的 `profileContext` 提供，不需要设置 `DSH_PROFILE_DIR`，也不要复制其他电脑的 profile 路径。
+
+如果整理地图网页支持 `/open` 文件动作，可在 DSH 插件设置中为单个 Host、端口和网页路径开启文件预览入口。先把下面的 Host ID 占位符换成自己已授权设备的真实 ID，再填入实际网页端口和路径。DSH 插件配置覆盖会替换该条目的完整 `config`，编辑时保留自己的其他设置。
+
+```yaml
+filePreviewTargets:
+  - hostId: '<authorized-host-id>'
+    port: 3000 # 示例端口，请改成实际服务端口。
+    path: '/'
+```
+
+配置完成后，在对应网页标签手动开启“本机预览”。点击网页文件后，还需要在 DSH 确认预览、查看目录或下载。只对匹配的整理地图生效；普通网页仍保留原应用行为。
+
+## 已知边界
+
+- 当前适配原生 Harness 工作区和会话。Codex、Cursor、ACP 等其他后端不在此候选版支持范围内。
+- 增强界面只在打开该电脑的本机 DSH 地址时启用，包括桌面应用和本机 loopback Web。通过公网地址直接打开的 Web 不启用多 Host 聚合。
+- 远端终端沿用 Remote 的终端开关和设备所有权规则，只能操作该设备创建并拥有的终端。终端列表约每 1.5 秒更新一次。
+- 停止远端子 agent 会向其所属 root 提交正式命令，并由 DSH 再次检查当前父子关系；root 会留下命令日志。返回成功表示已提交中断请求，实际运行状态随后更新。
+- **计划任务（schedule）不跨 Host。** 在哪台电脑创建和管理，就由哪台电脑的 DSH 调度；需要远端执行时，在目标 Host 上单独设置。
+- 单次完整远端文件读取上限为 **100 MiB**，图片预览上限为 **32 MiB**。超过限制时会提示错误，不返回截断文件。
+- 远端网页目前支持 `http://localhost`、`http://127.0.0.1` 和 `http://[::1]`，端口范围为 1024–65535，且必须通过 Remote 端口授权。Host 在线但服务未启动时，需要在那台电脑启动服务后重试。
+- 远端断线影响该 Host 的操作。重连后按原生恢复流程刷新；终端输入、提交请求和网页 WebSocket 消息不自动重放，避免重复执行。
+- 关闭网页标签、会话视图或停用增强会释放本增强持有的连接。安装候选包后仍需在自己的设备、网络和真实业务工作区验证再正式使用。
+
+## 升级
+
+结束正在执行的重要任务，保留旧 `.tgz` 和自己的插件配置，再通过 DSH 插件管理器安装同名新版本。管理器提示“需要重启”时，重启 DSH 后重新打开界面。每台需要增强界面的电脑分别升级；远端 Host 的 DSH 和 Remote 版本也要保持在已验证范围内。
+
+升级增强包不迁移或分发工作区、会话、账号和 Host 配置。升级后检查自己的插件配置；新增目标需自行配置。
+
+## 回退
+
+先停用增强包，再重新连接界面，恢复原版 Remote 使用方式。需要退回旧增强版本时，通过插件管理器重新安装保留的同名旧 `.tgz`，按提示重启 DSH。原版 Remote 可以继续保留。回退前检查旧版本的配置格式，恢复升级前保存的插件配置。
+
+## 开发
+
+在独立源码目录中安装依赖，禁止执行安装脚本，也不要把真实 Remote profile 用作单元测试 fixture：
+
+```powershell
+pnpm install --ignore-scripts --ignore-pnpmfile --ignore-workspace --config.auto-install-peers=false --config.strict-peer-dependencies=false
+node --test tests/*.test.js
+```
+
+Remote 是运行时前置 peer，开发安装命令关闭自动安装 peer；普通 Node 单测只用合成 Remote manifest，不加载真实 Remote，不依赖 `DSH_PROFILE_DIR`。`ws` 是本包自己的运行时依赖，生产适配器和单测都不依赖 profile 中的依赖提升布局。首次生成锁文件后，后续安装加 `--frozen-lockfile`。
+
+修改 Client 源码时，由该文件的负责人执行 `pnpm build` 生成浏览器入口。打包脚本不会运行构建或覆盖生成文件；打包前须完成对应版本的 Client 构建。安装版集成测试需要匹配版本的 DSH 环境，单独验证，普通单元测试不访问已安装 profile。
+
+Windows 使用 [打包脚本](./scripts/pack.ps1)：
+
+```powershell
+pwsh -NoProfile -File scripts/pack.ps1 -NodePath <已有Node可执行文件> -PnpmPath <已有pnpm的bin/pnpm.mjs>
+```
+
+也可省略参数，使用当前终端已有的 `node` 和 `pnpm`。脚本在清空 `DSH_PROFILE_DIR` 的子进程中运行单测，再检查语法、打包清单和所有运行时相对导入，生成 `.local-install` 下的版本包及 `.sha256`。它不安装依赖、不执行 install/prepack/prepare 等生命周期脚本、不修改 profile、不上传产物。
+
+仓库保留开发源码和历史测试；运行时包排除测试、测试 fixture、旧原型模块、Client 模板和构建工具。分发前还需由版本负责人完成真实界面及远端验收。
+
+## 许可
+
+本项目采用 [MIT License](./LICENSE)。预览传输及响应头过滤改编自 `ds-harness-remote 0.6.5`，保留原版权声明及 [REMOTE-LICENSE.txt](./REMOTE-LICENSE.txt)。本项目独立维护。

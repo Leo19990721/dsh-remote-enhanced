@@ -1,0 +1,56 @@
+{
+  "name": "@local/dsh-unified-sessions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Show remote folders beside local folders in the native DSH workspace list.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/Leo19990721/dsh-remote-enhanced.git" },
+  "homepage": "https://github.com/Leo19990721/dsh-remote-enhanced#readme",
+  "bugs": { "url": "https://github.com/Leo19990721/dsh-remote-enhanced/issues" },
+  "engines": {
+    "dsh": "0.2.2-rc.3",
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.28.5",
+  "exports": {
+    ".": "./native-host.js",
+    "./client": "./native-client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "native-host.js",
+    "native-client.js",
+    "catalog.js",
+    "owner-route.js",
+    "remote-adapter.js",
+    "host-channels.js",
+    "federated-*.js",
+    "rpc-binary.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "LICENSE",
+    "REMOTE-LICENSE.txt",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build-client.mjs",
+    "test": "node --test tests/*.test.js",
+    "release:pack": "pwsh -NoProfile -File scripts/pack.ps1"
+  },
+  "dependencies": {
+    "ws": "8.18.3"
+  },
+  "peerDependencies": {
+    "ds-harness-remote": "0.6.5"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-connection", "@deepseek-ai/dsh-client-ui-sidebar", "@deepseek-ai/dsh-client-ui-workspace", "@deepseek-ai/dsh-client-locale", "@deepseek-ai/dsh-client-ui-model-selection", "@deepseek-ai/dsh-client-file-upload", "@deepseek-ai/dsh-client-ui-sidebar-right", "@deepseek-ai/dsh-client-ui-sidebar-browser", "@deepseek-ai/dsh-client-ui-sidebar-documentpreview", "@deepseek-ai/dsh-client-ui-open-in-app", "@deepseek-ai/dsh-client-ui-file-actions", "@deepseek-ai/dsh-client-ui-chat", "ds-harness-remote"]
+    }
+  }
+}

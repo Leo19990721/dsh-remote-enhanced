@@ -1,0 +1,14 @@
+# Default: no predefined Host, port or filesystem path.
+- insert:
+    - id: native-remote-workspaces
+      name: '@local/dsh-unified-sessions'
+      config:
+        filePreviewTargets: []
+
+# Optional map file actions: edit this plugin's config in DSH settings.
+# Replace every placeholder before enabling. The hostId must identify an
+# already-authorized Remote Host; the port must also be allowed by that Host.
+# filePreviewTargets:
+#   - hostId: '<authorized-host-id>'
+#     port: 3000 # Example only: use your actual service port.
+#     path: '/'
