@@ -39,17 +39,6 @@ test('failed attach leaves native transport untouched', async () => {
   assert.equal(ctx.connection.rpc.call, call); assert.equal(ctx.connection.rpc.open, undefined);
 });
 
-test('self-check stays on the original owner channel and propagates cancellation', async () => {
-  const calls = [], stop = new AbortController();
-  const original = async (channel, endpoint, payload, signal) => { calls.push({ channel, endpoint, payload, signal }); return { ok: true, value: endpoint === 'attach' ? { viewId: 'v', baseHost: 'local' } : { hosts: [] } }; };
-  const ctx = { typert: carrierRegistry(), connection: { rpc: { call: original } } };
-  const carrier = await installSessionCarrier(ctx);
-  try {
-    assert.deepEqual(await carrier.selfCheck({ hostId: 'pc' }, stop.signal), { hosts: [] });
-    assert.deepEqual([calls[1].channel, calls[1].endpoint, calls[1].payload], ['/dsh-remote-workspaces', 'selfCheck', { hostId: 'pc' }]);
-    stop.abort(); assert.equal(calls[1].signal.aborted, true);
-  } finally { await carrier.dispose(); }
-});
 test('Host status subscription resumes after its physical stream disconnects', { timeout: 2000 }, async () => {
   let opens = 0; const stop = new AbortController();
   const ctx = { typert: carrierRegistry(), connection: { rpc: { call: async (_channel, endpoint) => ({ ok: true, value: endpoint === 'attach' ? { viewId: 'v', baseHost: 'local' } : null }) } } };

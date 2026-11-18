@@ -2,11 +2,11 @@
 
 在 DSH 原生工作区列表中并列显示本机和已授权远端电脑的文件夹。打开会话后，请求始终交给会话所属的 Host（运行该会话的电脑），保留各自的草稿和运行状态。切换会话沿用原生界面，不切换 Remote 全局目标、不整页刷新。
 
-首个公开版本为 **0.1.0**，包名保留 `@local/dsh-unified-sessions`，`private: true`。适配版本固定为 **DSH 0.2.2-rc.3、ds-harness-remote 0.6.5**；开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。DSH 或 Remote 升级后，需要重新验证版本适配。
+当前版本为 **0.1.1**，包名保留 `@local/dsh-unified-sessions`，`private: true`。适配版本固定为 **DSH 0.2.2-rc.3、ds-harness-remote 0.6.5**；开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。DSH 或 Remote 升级后，需要重新验证版本适配。
 
 ## 安装
 
-从 [v0.1.0 发布页](https://github.com/Leo19990721/dsh-remote-enhanced/releases/tag/v0.1.0) 下载 `dsh-unified-sessions-0.1.0.tgz` 和 `SHA256SUMS.txt`，核对 SHA-256 后，在 DSH 插件管理器填写安装包的绝对路径并启用。以后可从 [Releases](https://github.com/Leo19990721/dsh-remote-enhanced/releases) 获取更新；保留上一版本的安装包，方便回退。
+从 [Releases](https://github.com/Leo19990721/dsh-remote-enhanced/releases) 下载对应版本的 `dsh-unified-sessions-*.tgz` 和 `SHA256SUMS.txt`，核对 SHA-256 后，在 DSH 插件管理器填写安装包的绝对路径并启用。保留当前版本和上一版本的安装包，方便修复或回退。
 
 | 电脑 | 需要安装和配置的内容 |
 | --- | --- |
@@ -27,9 +27,9 @@
 
 下载保存到打开界面的本机电脑。远端文件不能直接交给本机应用打开；先预览或下载，再用本机应用处理。Office 文件预览还需要本机已有的 DSH Office 转换服务；服务不可用时可下载原文件。
 
-展开侧栏后，工作区列表顶部的“Remote 自检”可检查本机版本和已授权电脑目录，再点击单台电脑的检查按钮，确认其连接及终端能力。版本不匹配、电脑离线、请求限流、连接超时或授权失效会分别给出处理提示。打开该电脑的会话后再次检查，还可读取子会话停止命令是否已安装；缺少远端版本信息或未检查的项目会显示“未确认”。自检不会发送消息、执行命令、创建会话、更改远端设置或切换全局目标；认证缓存由原版 Remote 按正常连接流程维护。
+平时直接打开会话，无需手动自检。连不上时，按提示打开原版 Remote 的远程工作台：如果列表没有更新，点“刷新”；如果目标电脑在线，点它所在的一行重新尝试。原版 Remote 0.6.5 的工作台界面保持原样。已提交的消息和命令不会自动重发。
 
-工具 `remote_workspaces` 复用同一套检查：`selfCheck` 不带 `hostId` 时只读安装和设备目录；带 `hostId` 时仅检查该授权电脑；可选的已有 `sessionId` 只用于读取该会话可用的命令目录。`diagnostics` 提供连接状态及固定分类的处理建议。`resourceCheck` 只返回资源类型、大小、授权、状态和传输完成信息，不返回文件正文、网页正文或响应头。
+排查时可以请助手运行 `remote_workspaces` 的只读自检：`selfCheck` 不带 `hostId` 时只读安装和设备目录；带 `hostId` 时仅检查该授权电脑；可选的已有 `sessionId` 只用于读取该会话可用的命令目录。`diagnostics` 提供连接状态及固定分类的处理建议。`resourceCheck` 只返回资源类型、大小、授权、状态和传输完成信息，不返回文件正文、网页正文或响应头。
 
 ## 配置
 

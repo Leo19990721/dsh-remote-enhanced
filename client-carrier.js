@@ -157,11 +157,6 @@ export async function installSessionCarrier(ctx, { fetch: send = globalThis.fetc
     previewFiles: (leaseId, signal) => wrappedOpen('/api', '$previewFiles', { leaseId }, signal || active),
     previewClose: leaseId => viewCall('previewClose', { leaseId }, AbortSignal.timeout(5000)),
     modelCatalog: (sessionId, signal) => viewCall('modelCatalog', { sessionId }, signal || active),
-    async selfCheck(args = {}, signal) {
-      const result = await originalCall.call(connection.rpc, '/dsh-remote-workspaces', 'selfCheck', args, AbortSignal.any([active, ...signal ? [signal] : []]));
-      if (!result.ok) throw Object.assign(new Error(result.error.message), result.error);
-      return result.value;
-    },
     async *status(signal) {
       const statusSignal = AbortSignal.any([active, ...signal ? [signal] : []]);
       while (!statusSignal.aborted) {

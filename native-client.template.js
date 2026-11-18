@@ -10,7 +10,6 @@ window.__ModuleLoader__.load({
     /* BROWSER */
     /* RESOURCE_MENUS */
     /* RESOURCES */
-    /* HEALTH */
     return {
       inject: ['connection', 'typert', 'remote', 'slots', 'sessions', 'workspaces', 'locale', 'fileUpload', 'modelDirectories'],
       async apply(ctx) {
@@ -40,12 +39,6 @@ window.__ModuleLoader__.load({
         ctx.effect(() => () => { if (upload.post === post) upload.post = originalPost; }, 'remote-workspaces: session attachments');
         // Preserve the native folder component and every action. Only avoid
         // path-tree grouping, which would nest identically named computers.
-        const health = createHealthState((args, signal) => carrier.selfCheck(args, signal), stop.signal);
-        ctx.effect(() => () => health.dispose(), 'remote-workspaces: installation self-check');
-        const t = ctx.locale.bind('remoteWorkspaces');
-        const Health = healthComponent(React, health, t, hostId => [...ctx.sessions.manager?.sessions?.values() || []].find(session => {
-          try { return JSON.parse(session.sessionId.slice(9))[0] === hostId; } catch { return false; }
-        })?.sessionId);
         const entries = new Map();
         function reconcile() {
           for (const entry of ctx.slots.entries('sidebar.workspaces')) {
@@ -53,11 +46,7 @@ window.__ModuleLoader__.load({
             const Native = entry.component;
             function WorkspacePeers(props) {
               const useStore = (selector, equal) => props.useStore(value => selector(value.groupBy === 'workspace-tree' ? { ...value, groupBy: 'workspace' } : value), equal);
-              const native = React.createElement(Native, { ...props, useStore });
-              if (!props.wide) return native;
-              return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } },
-                React.createElement(Health),
-                React.createElement('div', { style: { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' } }, native));
+              return React.createElement(Native, { ...props, useStore });
             }
             entry.component = WorkspacePeers;
             entries.set(entry, { original: Native, wrapper: WorkspacePeers });

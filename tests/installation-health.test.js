@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { remoteProfile } from './helpers/remote-profile.js';
 import { installationHealth, assertInstallation, selfCheck } from '../federated-health.js';
 import { apply } from '../native-host.js';
+import manifest from '../package.json' with { type: 'json' };
 
 async function context(t, version = '0.6.5') {
   const dir = await remoteProfile(t, { version });
@@ -13,7 +14,7 @@ async function context(t, version = '0.6.5') {
 }
 test('installation checks report exact compatibility without loading the Remote runtime', async t => {
   const ctx = await context(t), result = await installationHealth(ctx);
-  assert.equal(result.version, '0.1.0');
+  assert.equal(result.version, manifest.version);
   assert.equal(result.checks.find(row => row.id === 'remoteVersion').state, 'pass');
   assert.equal(result.checks.find(row => row.id === 'carrier').state, 'pass');
   assert.equal(result.checks.find(row => row.id === 'dshVersion').state, 'unknown');

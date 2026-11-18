@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-unified-sessions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Show remote folders beside local folders in the native DSH workspace list.",

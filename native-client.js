@@ -2,7 +2,7 @@ window.__ModuleLoader__.load({
   id: '@local/dsh-unified-sessions',
   factory(require) {
     const React = require('react');
-    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","downloadLoading":"正在读取远端文件…","downloadStarted":"已开始下载到本机。","downloadSaved":"文件已保存到本机。","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"整理地图文件","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击地图中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","checkTitle":"Remote 自检","checkHint":"先检查本机安装和授权电脑目录，再按需检查单台电脑的连接；不会发送消息或执行命令。","checkRunning":"正在检查…","checkFailed":"自检请求未完成，请检查本机 DSH 连接后刷新。","checkHost":"检查 {computer}","checkLocalComputer":"本机","checkDshVersion":"DSH 版本","checkRemoteVersion":"Remote 版本","checkCarrier":"Harness 连接接口","checkConnection":"连接","checkDiscovery":"授权电脑目录","checkTerminal":"远端终端","checkChildStop":"远端子会话停止","checkStatepass":"通过","checkStatewarn":"需要设置","checkStatefail":"不可用","checkStateunknown":"未确认","checkVersionHint":"此版本需 {expected}；请在插件管理器检查版本。","checkTerminalHint":"请在这台电脑的 Remote 设置中检查终端开关及 Harness 终端支持。","checkChildStopHint":"需在远端启用同版本增强包；打开该电脑的会话后再次检查，可确认停止命令是否可用。","checkNotProbed":"尚未连接检查，请点击该电脑的检查按钮。","connectionRateLimited":"Remote 服务请求过多，请稍后再试，避免连续点击连接。","connectionServiceUnavailable":"Remote 服务暂时不可用，请稍后重试，保留当前登录和设备授权。","connectionHostOffline":"请在那台电脑打开 DSH，确认 Remote 在线后重试。","connectionConnectionTimeout":"连接超时，请确认两边网络和远端 DSH 在线后重试。","connectionAuthorizationRequired":"请打开原版 Remote 检查登录和设备授权，恢复后重试。","connectionConnectionInterrupted":"连接已中断，正在恢复；已提交的操作不会自动重复执行。","connectionConnectionFailed":"请检查两边 Remote 在线状态和网络，再重试。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","downloadLoading":"Reading remote file…","downloadStarted":"Download to this computer started.","downloadSaved":"File saved on this computer.","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","checkTitle":"Remote check","checkHint":"Check this installation and the authorized computer list, then check each connection on demand. No messages or commands are executed.","checkRunning":"Checking…","checkFailed":"The check did not finish. Check this computer's DSH connection and refresh.","checkHost":"Check {computer}","checkLocalComputer":"This computer","checkDshVersion":"DSH version","checkRemoteVersion":"Remote version","checkCarrier":"Harness connection API","checkConnection":"Connection","checkDiscovery":"Authorized computers","checkTerminal":"Remote terminal","checkChildStop":"Remote child Stop","checkStatepass":"Passed","checkStatewarn":"Setup needed","checkStatefail":"Unavailable","checkStateunknown":"Not confirmed","checkVersionHint":"Requires {expected}. Check the version in Plugins.","checkTerminalHint":"Check the terminal switch and Harness terminal support in Remote settings on this computer.","checkChildStopHint":"Enable the same enhanced bundle on the remote computer. Open one of its sessions and check again to confirm the Stop command.","checkNotProbed":"Not connected for this check. Use this computer's check button.","connectionRateLimited":"Remote is rate limited. Wait before retrying; avoid repeated connection clicks.","connectionServiceUnavailable":"Remote service is temporarily unavailable. Retry later and keep the existing login and device authorization.","connectionHostOffline":"Open DSH on that computer and confirm Remote is online, then retry.","connectionConnectionTimeout":"Connection timed out. Check both networks and the remote DSH status, then retry.","connectionAuthorizationRequired":"Check login and device authorization in the original Remote panel, then retry.","connectionConnectionInterrupted":"Connection interrupted; recovery is in progress. Submitted operations are never replayed automatically.","connectionConnectionFailed":"Check Remote status and the network on both computers, then retry."}};
+    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","downloadLoading":"正在读取远端文件…","downloadStarted":"已开始下载到本机。","downloadSaved":"文件已保存到本机。","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"整理地图文件","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击地图中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","connectionRateLimited":"请求太多，请等一会儿再试。","connectionServiceUnavailable":"远程服务暂时不可用，请稍后再试。","connectionHostOffline":"电脑不在线。请在那台电脑打开 DSH，再试一次。","connectionConnectionTimeout":"连接超时。请确认那台电脑已联网并打开 DSH，再试一次。","connectionAuthorizationRequired":"请打开远程工作台，检查登录和设备授权。","connectionConnectionInterrupted":"远程连接断开了。请在远程工作台查看连接状态。","connectionConnectionFailed":"暂时连不上。请确认那台电脑已联网并打开 DSH。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","downloadLoading":"Reading remote file…","downloadStarted":"Download to this computer started.","downloadSaved":"File saved on this computer.","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","connectionRateLimited":"Too many requests. Wait a moment, then try again.","connectionServiceUnavailable":"Remote is temporarily unavailable. Try again later.","connectionHostOffline":"This computer is offline. Open DSH on it, then try again.","connectionConnectionTimeout":"Connection timed out. Check that the other computer is online and DSH is open, then try again.","connectionAuthorizationRequired":"Open Remote Workbench to check sign-in and device access.","connectionConnectionInterrupted":"The connection dropped. Check its status in Remote Workbench.","connectionConnectionFailed":"Could not connect. Check that the other computer is online and DSH is open."}};
     // One authenticated socket carries every independently cancellable logical
 // stream. Separate long-lived HTTP fetches would exhaust Chromium's per-origin
 // connection pool and block ordinary Session commands.
@@ -270,11 +270,6 @@ async function installSessionCarrier(ctx, { fetch: send = globalThis.fetch, sign
     previewFiles: (leaseId, signal) => wrappedOpen('/api', '$previewFiles', { leaseId }, signal || active),
     previewClose: leaseId => viewCall('previewClose', { leaseId }, AbortSignal.timeout(5000)),
     modelCatalog: (sessionId, signal) => viewCall('modelCatalog', { sessionId }, signal || active),
-    async selfCheck(args = {}, signal) {
-      const result = await originalCall.call(connection.rpc, '/dsh-remote-workspaces', 'selfCheck', args, AbortSignal.any([active, ...signal ? [signal] : []]));
-      if (!result.ok) throw Object.assign(new Error(result.error.message), result.error);
-      return result.value;
-    },
     async *status(signal) {
       const statusSignal = AbortSignal.any([active, ...signal ? [signal] : []]);
       while (!statusSignal.aborted) {
@@ -878,70 +873,6 @@ function installSessionResources(ctx, carrier, React, signal) {
   };
 }
 
-    function createHealthState(check, signal) {
-  let snapshot = { open: false, busy: false }, control, task, disposed = false, lastArgs = {};
-  const listeners = new Set();
-  const publish = value => { snapshot = value; for (const listener of listeners) listener(); };
-  const close = () => { control?.abort(); control = undefined; task = undefined; publish({ open: false, busy: false }); };
-  return {
-    getSnapshot: () => snapshot,
-    subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
-    run(args = lastArgs) {
-      if (disposed || signal?.aborted) return Promise.resolve();
-      if (task) return task;
-      lastArgs = args;
-      control?.abort(); const current = new AbortController(); control = current;
-      publish({ ...snapshot, open: true, busy: true, error: false });
-      task = (async () => {
-        try { const report = await check(args, AbortSignal.any([current.signal, ...signal ? [signal] : []])); if (!current.signal.aborted && !disposed) publish({ open: true, busy: false, report }); }
-        catch { if (!current.signal.aborted && !disposed) publish({ ...snapshot, open: true, busy: false, error: true }); }
-        finally { if (control === current) task = undefined; }
-      })();
-      return task;
-    },
-    close,
-    dispose() { disposed = true; close(); listeners.clear(); },
-  };
-}
-function healthRows(report, t) {
-  const rows = [];
-  const add = (computer, checks) => {
-    for (const check of checks || []) {
-      const issue = check.issue?.reason;
-      const hint = issue ? t('connection' + issue[0].toUpperCase() + issue.slice(1))
-        : check.id === 'terminal' && check.state !== 'pass' ? t('checkTerminalHint')
-        : check.id === 'childStop' && check.state !== 'pass' ? t('checkChildStopHint')
-        : check.expected && check.state !== 'pass' ? t('checkVersionHint', { expected: check.expected })
-        : check.state === 'unknown' ? t('checkNotProbed') : '';
-      rows.push({ computer, id: check.id, state: check.state, label: t('check' + check.id[0].toUpperCase() + check.id.slice(1)), actual: check.actual || '', hint });
-    }
-  };
-  add(t('checkLocalComputer'), report?.local?.checks);
-  if (report?.discovery?.state === 'fail') add(t('checkLocalComputer'), [{ id: 'discovery', state: 'fail', issue: report.discovery }]);
-  for (const host of report?.hosts || []) add(host.name || host.hostId, host.checks);
-  return rows;
-}
-function healthComponent(React, state, t, sessionForHost) {
-  const buttonStyle = { color: 'inherit', background: 'transparent', border: '1px solid var(--dsw-alias-border-l3)', borderRadius: 6, padding: '4px 8px', font: 'inherit', cursor: 'pointer' };
-  return function RemoteHealth() {
-    const view = React.useSyncExternalStore(state.subscribe, state.getSnapshot);
-    const button = (label, onClick, disabled = false, extra = {}) => React.createElement('button', { type: 'button', style: buttonStyle, disabled, onClick, ...extra }, label);
-    return React.createElement('section', { 'aria-label': t('checkTitle'), style: { flexShrink: 0, padding: '6px 10px', color: 'var(--dsw-alias-label-primary)', font: 'inherit', borderBottom: '1px solid var(--dsw-alias-border-l3)' } },
-      React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } },
-        button(t('checkTitle'), () => { if (view.open) state.close(); else void state.run({}); }, false, { 'aria-expanded': view.open }),
-        view.open && button(t('close'), () => state.close())),
-      view.open && React.createElement('div', { 'aria-busy': view.busy, style: { maxHeight: '40vh', overflow: 'auto', marginTop: 8, overflowWrap: 'anywhere' } },
-        React.createElement('p', { style: { margin: '4px 0' } }, t('checkHint')),
-        view.busy && React.createElement('p', { role: 'status' }, t('checkRunning')),
-        view.error && React.createElement('p', { role: 'alert' }, t('checkFailed')),
-        ...healthRows(view.report, t).map((row, index) => React.createElement('div', { key: index, style: { padding: '4px 0' } },
-          React.createElement('div', null, `${row.computer} · ${row.label}：${t('checkState' + row.state)}${row.actual ? ' (' + row.actual + ')' : ''}`),
-          row.hint && React.createElement('small', null, row.hint))),
-        ...(view.report?.hosts || []).map(host => React.createElement('div', { key: host.hostId, style: { padding: '4px 0' } }, button(t('checkHost', { computer: host.name || host.hostId }), () => { const sessionId = sessionForHost(host.hostId); void state.run({ hostId: host.hostId, ...(sessionId ? { sessionId } : {}) }); }, view.busy || !host.online))),
-        button(t('retry'), () => { void state.run(); }, view.busy)));
-  };
-}
-
     return {
       inject: ['connection', 'typert', 'remote', 'slots', 'sessions', 'workspaces', 'locale', 'fileUpload', 'modelDirectories'],
       async apply(ctx) {
@@ -971,12 +902,6 @@ function healthComponent(React, state, t, sessionForHost) {
         ctx.effect(() => () => { if (upload.post === post) upload.post = originalPost; }, 'remote-workspaces: session attachments');
         // Preserve the native folder component and every action. Only avoid
         // path-tree grouping, which would nest identically named computers.
-        const health = createHealthState((args, signal) => carrier.selfCheck(args, signal), stop.signal);
-        ctx.effect(() => () => health.dispose(), 'remote-workspaces: installation self-check');
-        const t = ctx.locale.bind('remoteWorkspaces');
-        const Health = healthComponent(React, health, t, hostId => [...ctx.sessions.manager?.sessions?.values() || []].find(session => {
-          try { return JSON.parse(session.sessionId.slice(9))[0] === hostId; } catch { return false; }
-        })?.sessionId);
         const entries = new Map();
         function reconcile() {
           for (const entry of ctx.slots.entries('sidebar.workspaces')) {
@@ -984,11 +909,7 @@ function healthComponent(React, state, t, sessionForHost) {
             const Native = entry.component;
             function WorkspacePeers(props) {
               const useStore = (selector, equal) => props.useStore(value => selector(value.groupBy === 'workspace-tree' ? { ...value, groupBy: 'workspace' } : value), equal);
-              const native = React.createElement(Native, { ...props, useStore });
-              if (!props.wide) return native;
-              return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } },
-                React.createElement(Health),
-                React.createElement('div', { style: { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' } }, native));
+              return React.createElement(Native, { ...props, useStore });
             }
             entry.component = WorkspacePeers;
             entries.set(entry, { original: Native, wrapper: WorkspacePeers });
