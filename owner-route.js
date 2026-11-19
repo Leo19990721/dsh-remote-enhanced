@@ -1,6 +1,5 @@
-// Connection.rpc.handle in DSH 0.2.2-rc.3 captures the provider's context,
-// which has no webServer injection. Own the WebRoute in this plugin's context
-// and keep Connection's unchanged authentication/Host fence and owner check.
+// Own the WebRoute in this plugin's context. Keep Connection's authentication
+// and Host/Origin checks, followed by the route's explicit owner check.
 export function registerOwnerRoute(ctx, channel, operate) {
   const connection = ctx.connection;
   const route = {

@@ -19,7 +19,7 @@ const { once } = require('node:events');
   const { installSessionCarrier } = await import('../client-carrier.js');
   const { remoteBrowser } = await import('../client-browser.js');
   const { LoopbackPreview } = await import('../federated-preview-transport.js');
-  const { WebSocketServer, WebSocket } = createRequire(path.join(process.env.DSH_PROFILE_DIR, 'package.json'))('ws');
+  const { WebSocketServer, WebSocket } = require('ws');
   const loopbackCalls = [];
   const definitions = await Promise.all(['dsh-api-workspace-files', 'dsh-office-kit'].map(name => load('@deepseek-ai/' + name + '/remote')));
   const descriptors = new Map(definitions.flatMap(row => row.default.descriptors.map(d => [d.namespace + '/' + d.method, d])));

@@ -8,11 +8,19 @@ importers:
 
   .:
     dependencies:
+      semver:
+        specifier: 7.8.6
+        version: 7.8.6
       ws:
         specifier: 8.18.3
         version: 8.18.3
 
 packages:
+
+  semver@7.8.6:
+    resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
@@ -27,5 +35,7 @@ packages:
         optional: true
 
 snapshots:
+
+  semver@7.8.6: {}
 
   ws@8.18.3: {}

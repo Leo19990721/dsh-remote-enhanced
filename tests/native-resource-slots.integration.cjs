@@ -7,16 +7,22 @@ const vm = require('node:vm');
 const { createRequire } = require('node:module');
 (async () => {
   const resolve = createRequire(path.join(process.env.DSH_INSTALL_DIR, 'package.json'));
-  const frontend = path.dirname(resolve.resolve('@deepseek-ai/dsh-web-frontend/package.json'));
-  assert.equal(JSON.parse(fs.readFileSync(path.join(frontend, 'package.json'), 'utf8')).version, '0.2.2-rc.3');
+  const frontendManifest = resolve.resolve('@deepseek-ai/dsh-web-frontend/package.json');
+  const range = require('../package.json').engines.dsh;
+  assert.ok(require('semver').satisfies(resolve(frontendManifest).version, range, { includePrerelease: true }), 'installed frontend must satisfy the declared DSH range');
+  const frontend = path.dirname(frontendManifest);
   const html = fs.readFileSync(path.join(frontend, 'dist/index.html'), 'utf8');
-  const entry = html.match(/src="\.\/assets\/(index-[^"]+\.js)"/)[1];
+  const entry = html.match(/src="\.\/assets\/(index-[\w-]+\.js)"/)?.[1];
+  assert.ok(entry, 'installed frontend entry must exist');
   const source = fs.readFileSync(path.join(frontend, 'dist/assets', entry), 'utf8');
-  // SlotCore is a static browser identity and is not shipped as a Node package.
-  // Evaluate this verified installation's pure registry section, unchanged.
-  const start = source.indexOf('function MN('), end = source.indexOf('const RN=Object.freeze', start);
-  assert.ok(start >= 0 && end > start, 'verified installed SlotCore section must exist');
-  const SlotCore = vm.runInNewContext(source.slice(start, end) + '; AN', { queueMicrotask });
+  // SlotCore is in the frontend's static module table. Locate the pure registry
+  // by its named exports, rather than pinning names from one minified build.
+  const exports = /const [\w$]+=Object\.freeze\(Object\.defineProperty\(\{__proto__:null,SlotCore:([\w$]+),SlotOwnershipError:[\w$]+,StaleAuthorizationError:[\w$]+,resolveSlotLabel:[\w$]+,standardHookPropName:([\w$]+)\}/.exec(source);
+  assert.ok(exports, 'installed frontend must expose the SlotCore module table entry');
+  const [, coreName, hookName] = exports;
+  const start = source.lastIndexOf(`function ${hookName}(`, exports.index);
+  assert.ok(start >= 0 && exports.index > start && exports.index - start < 64_000, 'installed SlotCore registry must have the expected bounded shape');
+  const SlotCore = vm.runInNewContext(source.slice(start, exports.index) + `; ${coreName}`, { queueMicrotask }, { timeout: 1000 });
   const core = new SlotCore(), disposers = [];
   const seats = {
     'conversation.view': { kind: 'keyed', scope: 'session' },

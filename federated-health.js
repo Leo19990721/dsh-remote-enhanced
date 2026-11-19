@@ -2,12 +2,22 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import semver from 'semver';
 import { connectionIssue } from './federated-connection.js';
 
 const manifest = JSON.parse(readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'));
 const expectedDsh = manifest.engines.dsh, expectedRemote = manifest.peerDependencies['ds-harness-remote'];
 const row = (id, state, facts = {}) => ({ id, state, ...facts });
-const version = (id, actual, expected) => row(id, actual ? actual === expected ? 'pass' : 'fail' : 'unknown', { expected, ...(typeof actual === 'string' && /^[0-9][0-9A-Za-z.+-]{0,79}$/.test(actual) ? { actual } : {}) });
+const exact = (actual, expected) => actual === expected;
+function version(id, actual, expected, matches = exact) {
+  return row(id, actual ? matches(actual, expected) ? 'pass' : 'fail' : 'unknown', {
+    expected,
+    ...(typeof actual === 'string' && /^[0-9][0-9A-Za-z.+-]{0,79}$/.test(actual) ? { actual } : {}),
+  });
+}
+// Match DSH app-boot's nonempty, prerelease-inclusive engines.dsh check.
+const dshVersionCheck = actual => version('dshVersion', actual, expectedDsh,
+  (value, range) => typeof value === 'string' && range.trim() !== '' && semver.satisfies(value, range, { includePrerelease: true }));
 const stateOf = checks => checks.some(check => check.state === 'fail') ? 'fail' : checks.some(check => check.state !== 'pass') ? 'warn' : 'pass';
 
 export async function installationHealth(ctx) {
@@ -20,7 +30,7 @@ export async function installationHealth(ctx) {
       dshVersion = boot.getDshRuntimeVersion();
     } catch { /* Unknown is visible; the launcher also enforces engines.dsh. */ }
   }
-  checks.push(version('dshVersion', dshVersion, expectedDsh));
+  checks.push(dshVersionCheck(dshVersion));
   let remoteVersion;
   try {
     const require = createRequire(join(profile?.dir || '', 'package.json'));
@@ -64,7 +74,7 @@ export async function selfCheck(ctx, federation, args, signal) {
   const targets = hostId && hostId !== 'local' ? devices.filter(device => device.deviceId === hostId) : hostId === 'local' ? [] : devices;
   if (hostId && hostId !== 'local' && !targets.length) return { local, state: 'fail', discovery: { state: 'pass' }, hosts: [{ hostId, checks: [row('connection', 'fail', { issue: connectionIssue({ code: 'AUTHORIZATION_REQUIRED' }) })] }] };
   for (const device of targets) {
-    const checks = [version('dshVersion', device.harnessVersion, expectedDsh), version('remoteVersion', device.clientVersion, expectedRemote)];
+    const checks = [dshVersionCheck(device.harnessVersion), version('remoteVersion', device.clientVersion, expectedRemote)];
     const host = { hostId: device.deviceId, name: String(device.name || device.deviceId).replace(/[\x00-\x1f\x7f]/g, '').slice(0, 120), online: device.online === true, checks };
     hosts.push(host);
     if (!hostId) { checks.push(row('connection', 'unknown')); continue; }

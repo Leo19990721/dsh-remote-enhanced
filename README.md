@@ -2,7 +2,7 @@
 
 在 DSH 原生工作区列表中并列显示本机和已授权远端电脑的文件夹。打开会话后，请求始终交给会话所属的 Host（运行该会话的电脑），保留各自的草稿和运行状态。切换会话沿用原生界面，不切换 Remote 全局目标、不整页刷新。
 
-当前版本为 **0.1.1**，包名保留 `@local/dsh-unified-sessions`，`private: true`。适配版本固定为 **DSH 0.2.2-rc.3、ds-harness-remote 0.6.5**；开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。DSH 或 Remote 升级后，需要重新验证版本适配。
+当前版本为 **0.1.2**，包名保留 `@local/dsh-unified-sessions`，`private: true`。DSH 安装范围为 **`>=0.2.2-rc.3 <0.3.0-0`**，含后续 0.2.x 预发布版，排除 0.3.x（含预发布版）。本机和远端的版本自检采用同一范围。原版 Remote 仍需 **`ds-harness-remote@0.6.5`**；升级 DSH 后请先检查自己的电脑组合。开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。
 
 ## 安装
 
@@ -10,13 +10,13 @@
 
 | 电脑 | 需要安装和配置的内容 |
 | --- | --- |
-| 本机：实际打开 DSH 界面的电脑 | DSH 0.2.2-rc.3；先安装并启用 `ds-harness-remote@0.6.5`，再安装并启用本增强包。安装器会根据本包声明安装 `ws`。 |
-| 远端：保存工作区和运行会话的电脑 | DSH 0.2.2-rc.3 和 `ds-harness-remote@0.6.5`；按 Remote 原版流程登录、授权并保持 Host 在线。若要从界面停止远端子 agent，还需在该 Host 安装并启用同版本增强包。基础远端会话访问可仅在本机安装增强包。 |
+| 本机：实际打开 DSH 界面的电脑 | 使用上文范围内的 DSH；先安装并启用 `ds-harness-remote@0.6.5`，再安装并启用本增强包。 |
+| 远端：保存工作区和运行会话的电脑 | 使用上文范围内的 DSH 和 `ds-harness-remote@0.6.5`；按 Remote 原版流程登录、授权并保持 Host 在线。若要从界面停止远端子 agent，还需在该 Host 安装并启用同版本增强包。基础远端会话访问可仅在本机安装增强包。 |
 | 双向使用 | 如果也要从远端电脑的界面查看其他 Host，在那台电脑上同样安装本增强包。每台电脑分别保存自己的配置。 |
 
 连接继续使用 DSH 官方账号登录、Remote 设备授权、加密传输和原生 owner 权限检查。首次连接在原版 Remote 中完成。增强包不包含账号、密钥、登录缓存、设备登记、会话或作者电脑路径，不修改 DSH 和 Remote 安装文件，也不代替官方认证。
 
-安装包只携带运行时代码、默认配置、说明、许可、语言资源和图标；`ws` 通过包依赖安装。准备离线安装时，需要另外准备包管理器依赖缓存。
+安装包只携带运行时代码、默认配置、说明、许可、语言资源和图标；安装器会安装 `semver` 和 `ws`。准备离线安装时，需要另外准备包管理器依赖缓存。
 
 ## 使用
 
@@ -77,7 +77,7 @@ pnpm install --ignore-scripts --ignore-pnpmfile --ignore-workspace --config.auto
 node --test tests/*.test.js
 ```
 
-Remote 是运行时前置 peer，开发安装命令关闭自动安装 peer；普通 Node 单测只用合成 Remote manifest，不加载真实 Remote，不依赖 `DSH_PROFILE_DIR`。`ws` 是本包自己的运行时依赖，生产适配器和单测都不依赖 profile 中的依赖提升布局。首次生成锁文件后，后续安装加 `--frozen-lockfile`。
+Remote 是运行时前置 peer，开发安装命令关闭自动安装 peer。普通 Node 单测使用合成 Remote manifest，不加载真实 Remote，不依赖 `DSH_PROFILE_DIR`。`semver` 和 `ws` 是本包直接声明的运行时依赖。首次生成锁文件后，后续安装加 `--frozen-lockfile`。
 
 修改 Client 源码时，由该文件的负责人执行 `pnpm build` 生成浏览器入口。打包脚本不会运行构建或覆盖生成文件；打包前须完成对应版本的 Client 构建。安装版集成测试需要匹配版本的 DSH 环境，单独验证，普通单元测试不访问已安装 profile。
 

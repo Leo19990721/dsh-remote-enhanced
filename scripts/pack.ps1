@@ -29,7 +29,7 @@ Invoke-Node -NodeArgs @('--test', 'tests/*.test.js')
 $manifest = Get-Content -LiteralPath (Join-Path $root 'package.json') -Raw | ConvertFrom-Json
 $stem = $manifest.name -replace '^@[^/]+/', ''
 $tarball = Join-Path $root ".local-install/$stem-$($manifest.version).tgz"
-$packArgs = @('--ignore-workspace', '--config.ignore-pnpmfile=true', '--config.ignore-scripts=true', 'pack', '--out', $tarball)
+$packArgs = @('--dir', $root, '--config.ignore-pnpmfile=true', '--config.ignore-scripts=true', 'pack', '--out', $tarball)
 if ($PnpmPath) {
   $pnpm = (Resolve-Path -LiteralPath $PnpmPath).Path
   Invoke-Node -NodeArgs (@($pnpm) + $packArgs)
@@ -75,11 +75,10 @@ assert.equal(manifest.name, '@local/dsh-unified-sessions');
 assert.equal(manifest.version, process.argv[2]);
 assert.equal(manifest.private, true);
 assert.equal(manifest.license, 'MIT');
-assert.equal(manifest.engines.dsh, '0.2.2-rc.3');
+assert.equal(manifest.engines.dsh, '>=0.2.2-rc.3 <0.3.0-0');
 assert.equal(manifest.engines.node, '>=24');
-assert.equal(manifest.dependencies.ws, '8.18.3');
+assert.deepEqual(manifest.dependencies, { semver: '7.8.6', ws: '8.18.3' });
 assert.equal(manifest.peerDependencies['ds-harness-remote'], '0.6.5');
-assert.deepEqual(Object.keys(manifest.dependencies), ['ws']);
 const allowed = /^(?:(?:native-host|native-client|catalog|owner-route|remote-adapter|host-channels|rpc-binary|federated-[a-z-]+)\.js|package\.json|cordis\.patch\.yml|locale\/[a-z-]+\.json|icon\.svg|LICENSE|REMOTE-LICENSE\.txt|README\.md)$/;
 for (const filename of files.keys()) assert.match(filename, allowed, 'Unexpected packed file: ' + filename);
 for (const filename of ['native-host.js', 'native-client.js', 'remote-adapter.js', 'cordis.patch.yml', 'locale/en.json', 'locale/zh.json', 'icon.svg', 'LICENSE', 'REMOTE-LICENSE.txt', 'README.md']) assert.ok(files.has(filename), 'Missing packed file: ' + filename);
