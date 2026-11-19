@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { installSessionCarrier } from '../client-carrier.js';
+import { carrierRegistry } from './carrier-fixture.js';
 
 function fixture(baseHost = 'local') {
   const descriptors = new Map(['session/list', 'session/prompt', 'agentPresets/list', 'agentPresets/select'].map(endpoint => [endpoint, { namespace: endpoint.split('/')[0], method: endpoint.split('/')[1] }]));
@@ -100,4 +101,48 @@ test('missing native registry leaves original RPC untouched instead of guessing 
   const call = f.rpc.call, open = f.rpc.open;
   await assert.rejects(installSessionCarrier(f.ctx), /registry unavailable/);
   assert.equal(f.rpc.call, call); assert.equal(f.rpc.open, open); assert.equal(f.calls.length, 0);
+});
+
+function revealFixture(localAttach) {
+  const calls = [], savedPath = 'C:\\Downloads\\notes.txt';
+  const typert = carrierRegistry(['session/openWorkspacePath']);
+  const call = async (channel, method, payload, signal) => {
+    calls.push({ channel, method, payload, signal });
+    if (method === 'attach') return payload.baseHost === 'local' ? localAttach()
+      : { ok: true, value: { viewId: 'main', baseHost: 'pc' } };
+    if (method === 'close') return { ok: true };
+    assert.fail('must not dispatch a reveal when a local view was not confirmed');
+  };
+  return { ctx: { typert, connection: { rpc: { call } } }, calls, savedPath };
+}
+
+test('a failed or wrong-computer reveal attach does not dispatch or alter the existing view', async () => {
+  const failure = { ok: false, error: { message: 'Unavailable' } };
+  for (const result of [failure, { ok: true, value: { viewId: 'other', baseHost: 'pc' } }, { ok: true, value: { viewId: 'main', baseHost: 'local' } }]) {
+    const f = revealFixture(() => result), carrier = await installSessionCarrier(f.ctx);
+    try {
+      if (result.ok) await assert.rejects(carrier.revealSavedFile(f.savedPath), /Local view unavailable/);
+      else assert.equal(await carrier.revealSavedFile(f.savedPath), failure);
+      assert.equal(carrier.viewId, 'main');
+      assert.deepEqual(f.calls.map(({ method, payload }) => [method, payload]), [
+        ['attach', {}], ['attach', { baseHost: 'local' }],
+        ...(result.value?.viewId === 'other' ? [['close', { viewId: 'other' }]] : []),
+      ]);
+    } finally { await carrier.dispose(); }
+  }
+});
+
+test('cancellation closes a transient reveal view without using the cancelled request signal', async () => {
+  const stop = new AbortController();
+  const f = revealFixture(() => { stop.abort(); return { ok: true, value: { viewId: 'temporary', baseHost: 'local' } }; });
+  const carrier = await installSessionCarrier(f.ctx);
+  try {
+    await assert.rejects(carrier.revealSavedFile(f.savedPath, stop.signal), { name: 'AbortError' });
+    assert.deepEqual(f.calls.map(row => row.method), ['attach', 'attach', 'close']);
+    assert.equal(f.calls[1].signal.aborted, true);
+    assert.equal(f.calls[2].signal.aborted, false);
+    assert.deepEqual(f.calls[2].payload, { viewId: 'temporary' });
+    await assert.rejects(carrier.revealSavedFile(f.savedPath, stop.signal), { name: 'AbortError' });
+    assert.equal(f.calls.length, 3);
+  } finally { await carrier.dispose(); }
 });

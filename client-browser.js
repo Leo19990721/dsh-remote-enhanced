@@ -1,12 +1,18 @@
 function browserInputUrl(value) {
-  // Match the native address bar's scheme inference before choosing the Host.
-  // Otherwise `localhost:41788` passes this guard and is opened on this PC.
+  if (typeof value !== 'string') return;
   const trimmed = value.trim();
   const explicit = /^[A-Za-z][A-Za-z\d+.-]*:(?!\d+(?:[/?#]|$))/u.test(trimmed);
-  try { return new URL(explicit ? trimmed : `https://${trimmed}`); } catch { return undefined; }
+  try {
+    if (explicit) return new URL(trimmed);
+    // Remote's authorized loopback preview uses HTTP. Treat omitted schemes on
+    // its loopback addresses accordingly; never downgrade explicit HTTPS.
+    const localPage = new URL(`http://${trimmed}`);
+    return loopbackHostname(localPage.hostname) ? localPage : new URL(`https://${trimmed}`);
+  } catch { return undefined; }
 }
+function loopbackHostname(hostname) { return ['localhost', '127.0.0.1', '[::1]'].includes(hostname); }
 export function isLoopbackPage(value) {
-  return ['localhost', '127.0.0.1', '[::1]'].includes(browserInputUrl(value)?.hostname);
+  return loopbackHostname(browserInputUrl(value)?.hostname);
 }
 
 export function previewErrorMessage(error, value, source, t) {
@@ -59,7 +65,8 @@ export function remoteBrowser(native, carrier, sessionId, { notify = () => {}, s
     const original = originalOf(value); tab.original = original; tab.busy = true; tab.error = undefined; tab.snapshot = undefined; update(tab);
     try {
       let destination = original;
-      const target = isLoopbackPage(original) ? browserInputUrl(original) : undefined;
+      const parsed = browserInputUrl(original);
+      const target = loopbackHostname(parsed?.hostname) ? parsed : undefined;
       const port = target ? target.port || (target.protocol === 'https:' ? '443' : '80') : undefined;
       // Occurrences are never reused after closing a tab. Every explicit file
       // navigation gets a new lease, invalidating native history's old origins.

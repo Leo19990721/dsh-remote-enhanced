@@ -58,21 +58,32 @@ test('browser persistence keeps both tabs original URLs across Session action re
     assert.equal(adapter.displayState('t0', observed), observed); assert.equal(source.getSnapshot(), revision, 'render reads do not publish extra React work');
   } finally { stops.forEach(stop => stop.abort()); await adapter.dispose(); }
 });
-test('scheme-free localhost input never falls through to native local navigation', async () => {
+test('the remote sidebar opens a plain loopback address as HTTP on the Session computer', async () => {
   const loads = [], opened = [], tab = new AbortController();
   const adapter = remoteBrowser({ mount() { return () => {}; }, loadUrl: (...args) => loads.push(args) }, {
-    async previewOpen(_session, url) { opened.push(url); return { ok: false, error: { message: 'Use http:// for remote localhost pages.' } }; },
+    async previewOpen(owner, url, _lease, _signal, { fileMode }) {
+      opened.push([owner, url, fileMode]);
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'http:' || parsed.port !== '32190') return { ok: false, error: { message: 'This remote address is unavailable.' } };
+      return { ok: true, value: { url: 'http://dsh-test.localhost:1234' + parsed.pathname + parsed.search, filePreviewAvailable: false } };
+    },
     async previewClose() {},
   }, id);
   adapter.mount({ tabId: 'bare', signal: tab.signal, openTab() {} });
   try {
-    for (const value of ['localhost:41788/map?q=1', '127.0.0.1:41788/map', '[::1]:41788/map', ' 127.1:41788/map ']) {
+    for (const value of ['localhost:32190/docs?q=1', '127.0.0.1:32190/docs', '[::1]:32190/docs', ' 127.1:32190/docs ']) {
       adapter.loadUrl('bare', value); await tick();
     }
-    assert.equal(loads.length, 0, 'native address parsing would otherwise open localhost on this computer');
-    assert.deepEqual(opened, ['https://localhost:41788/map?q=1', 'https://127.0.0.1:41788/map', 'https://[::1]:41788/map', 'https://127.0.0.1:41788/map']);
+    assert.deepEqual(opened.map(row => row[1]), ['http://localhost:32190/docs?q=1', 'http://127.0.0.1:32190/docs', 'http://[::1]:32190/docs', 'http://127.0.0.1:32190/docs']);
+    assert.ok(opened.every(([owner, , fileMode]) => owner === id && fileMode === false));
+    assert.deepEqual(loads.map(row => row[1]), ['http://dsh-test.localhost:1234/docs?q=1', ...Array(3).fill('http://dsh-test.localhost:1234/docs')]);
+    for (const value of ['https://localhost:32190/docs', 'localhost:32191/docs']) {
+      adapter.loadUrl('bare', value); await tick();
+    }
+    assert.deepEqual(opened.slice(-2).map(row => row[1]), ['https://localhost:32190/docs', 'http://localhost:32191/docs']);
+    assert.equal(loads.length, 4, 'an unsupported or denied address never falls back to the local computer');
     adapter.loadUrl('bare', 'example.com/docs'); await tick();
-    assert.deepEqual(loads, [['bare', 'example.com/docs']], 'ordinary addresses still use native validation');
+    assert.deepEqual(loads.at(-1), ['bare', 'example.com/docs'], 'ordinary addresses still use native validation');
   } finally { tab.abort(); await adapter.dispose(); }
 });
 test('explicit file mode gets a fresh tab lease and claims only that immutable Session', async () => {

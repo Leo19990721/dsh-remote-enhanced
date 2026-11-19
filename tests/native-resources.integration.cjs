@@ -21,7 +21,7 @@ const { once } = require('node:events');
   const { LoopbackPreview } = await import('../federated-preview-transport.js');
   const { WebSocketServer, WebSocket } = require('ws');
   const loopbackCalls = [];
-  const definitions = await Promise.all(['dsh-api-workspace-files', 'dsh-office-kit'].map(name => load('@deepseek-ai/' + name + '/remote')));
+  const definitions = await Promise.all(['dsh-api-workspace-files', 'dsh-office-kit', 'dsh-api-session-controller'].map(name => load('@deepseek-ai/' + name + '/remote')));
   const descriptors = new Map(definitions.flatMap(row => row.default.descriptors.map(d => [d.namespace + '/' + d.method, d])));
   const stop = new AbortController(), peer = { principal: { kind: 'owner' }, signal: stop.signal }, calls = [], releases = [];
   const file = new Uint8Array(4 * 1024 * 1024 + 17).fill(129), localFile = new Uint8Array([1, 2, 3]);
@@ -32,6 +32,10 @@ const { once } = require('node:events');
     throw new Error('Native file confirmation must not call upstream /open');
   } } }, stop.signal), async call(endpoint, payload) {
     calls.push([host, endpoint, payload]); const data = host === 'local' ? localFile : file, args = payload.args;
+    if (endpoint === 'session/openWorkspacePath') {
+      assert.equal(host, 'local');
+      return { ok: true, value: { opened: true } };
+    }
     if (endpoint === 'workspaceFiles/stat') return args.path === 'directory'
       ? { ok: false, error: { code: 'workspace-file/not-file', message: 'synthetic directory', details: {} } }
       : { ok: true, value: { absolutePath: 'C:\\same.png', version: 'v-' + host, bytes: data.length } };
@@ -58,14 +62,14 @@ const { once } = require('node:events');
     // Use the installed native saving service, stopping at its desktop bridge
     // rather than opening a dialog or writing a user file. Actual RPCs and
     // multipart bytes remain in use; neither React nor a DOM is emulated.
-    let actions, saved = 0, savedBytes, savedContentType, nativeRequest, nativeSaveStatus = 'cancelled';
+    let actions, saved = 0, savedBytes, savedContentType, nativeRequest, saveResult = { status: 'cancelled' };
     const desktop = { async save(request) {
       saved++; nativeRequest = request;
       assert.ok(request.url.startsWith('blob:'), 'native bridge must receive the authorized bytes rather than a remote source path');
       const response = await fetch(request.url);
       savedContentType = response.headers.get('content-type');
       savedBytes = new Uint8Array(await response.arrayBuffer());
-      return { status: nativeSaveStatus };
+      return saveResult;
     } };
     // Plugin apply only creates the real service. Its optional menu registration
     // is independent and is covered by the menu contract test.
@@ -100,15 +104,16 @@ const { once } = require('node:events');
     let restoreResources;
     const resourceFiber = ctx.plugin({ inject: ['remote', 'slots', 'locale', 'sessions'], apply(scope) {
       scope.inject(resourceInject, injected => {
-        restoreResources = installSessionResources(injected, { baseHost: 'local', mediaUrl: () => 'http://unavailable.invalid/original' }, undefined, stop.signal);
+        restoreResources = installSessionResources(injected, { ...carrier, mediaUrl: () => 'http://unavailable.invalid/original' }, undefined, stop.signal);
       });
     } }); fibers.push(resourceFiber); await resourceFiber.inertia;
     assert.equal(typeof restoreResources, 'function');
     try {
       const fileMenu = menuEntries.find(row => row.target === 'file');
       const value = { sessionId: id, path: 'same.png' };
-      await fileMenu.resolve(value).find(row => row.id === 'download').run();
+      await fileMenu.resolve(value).find(row => row.id === 'saveAs').run();
       assert.equal(saved, 1); assert.deepEqual(savedBytes, file); assert.equal(nativeRequest.name, 'same.png');
+      assert.equal(nativeRequest.mode, 'saveAs');
       assert.equal(nativeRequest.mediaType, 'application/x-dsh-original', 'raw original bytes need an opaque MIME so Electron does not reinterpret them as text');
       assert.equal(savedContentType, nativeRequest.mediaType, 'the blob itself must carry the MIME because Desktop prefers the downloaded content type over request metadata');
       assert.equal(nativeFiles.testExportName('报告封面.docx', 'text/plain'), '报告封面.txt', 'the installed filename resolver reproduces the observed original regression');
@@ -116,7 +121,7 @@ const { once } = require('node:events');
       for (const name of ['same.png', '报告封面.docx', 'sample.md', 'unknown.custom']) {
         assert.equal(nativeFiles.testExportName(name, savedContentType), name, 'the installed original-file resolver must preserve the exact supplied suffix');
       }
-      assert.deepEqual(notices.map(row => row[0]), ['downloadLoading'], 'cancelled native dialog must not show a saved notification');
+      assert.deepEqual(notices, [], 'cancelled native dialog is silent');
       await assert.rejects(fetch(nativeRequest.url), /fetch failed/);
       await fileMenu.resolve(value).find(row => row.id === 'open').run();
       assert.equal(navigations.at(-1)[0], id); assert.match(navigations.at(-1)[1], /^dsh-resource:\/\/file\/session\//);
@@ -163,13 +168,19 @@ const { once } = require('node:events');
         await adapter.consumeFile('map', 'preview', ({ sessionId, path }) => fileMenu.resolve({ sessionId, path }).find(row => row.id === 'open').run());
         assert.equal(navigations.at(-1)[0], id); assert.ok(navigations.at(-1)[1].endsWith('/D:/Synthetic/same.png'));
         assert.equal(calls.at(-1)[0], 'pc'); assert.equal(calls.at(-1)[2].args.workspaceFileScopeId, 's');
-        nativeSaveStatus = 'saved';
+        const savedPath = 'C:\\Downloads\\same (1).png';
+        saveResult = { status: 'saved', path: savedPath };
         phase = 'post-download'; assert.equal((await postFile(proposed)).status, 409);
         phase = 'pending-download'; await until(() => adapter.fileState('map').pending?.path === proposed);
         const saveBefore = saved;
         await adapter.consumeFile('map', 'download', ({ sessionId, path }) => fileMenu.resolve({ sessionId, path }).find(row => row.id === 'download').run());
         assert.equal(saved, saveBefore + 1); assert.deepEqual(savedBytes, file);
-        assert.equal(nativeRequest.name, 'same.png'); assert.equal(notices.at(-1)[0], 'downloadSaved');
+        assert.equal(nativeRequest.name, 'same.png'); assert.equal(nativeRequest.mode, 'download');
+        const [notice, success, action] = notices.at(-1);
+        assert.equal(notice, 'menu.downloaded'); assert.equal(success, true); assert.equal(action.label, 'menu.reveal');
+        assert.ok(calls.every(row => row[1] !== 'session/openWorkspacePath'), 'saving alone does not reveal');
+        phase = 'reveal saved copy'; await action.run();
+        assert.deepEqual(calls.at(-1), ['local', 'session/openWorkspacePath', { args: { request: { path: savedPath, action: 'reveal' } } }]);
         await assert.rejects(fetch(nativeRequest.url), /fetch failed/);
         assert.ok(loopbackCalls.every(([, op]) => ['describe', 'close'].includes(op)), 'no remote OS action or business POST');
         assert.ok(calls.filter(row => row[2].args.path === proposed).every(row => row[0] === 'pc' && row[2].args.workspaceFileScopeId === 's'));

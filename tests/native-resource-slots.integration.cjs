@@ -42,9 +42,10 @@ const { createRequire } = require('node:module');
     const held = core.entries(seat).find(row => row.component === Native);
     bodies.set(Native, held); return held;
   };
-  function Browser() {} function Markdown() {} function Menu() {} function Actions() {} function Chat() {} function Other() {}
+  function Browser() {} function Document() {} function Markdown() {} function Menu() {} function Actions() {} function Chat() {} function Other() {}
   const browserInject = () => ({});
   const browser = add('sidebar.right.pane.tab', { key: '@deepseek-ai/dsh-client-ui-sidebar-browser', inject: browserInject }, Browser);
+  const document = add('sidebar.right.pane.tab', { key: '@deepseek-ai/dsh-client-ui-sidebar-documentpreview' }, Document);
   const markdown = add('sidebar.right.tab.document', { key: '@deepseek-ai/dsh-client-ui-sidebar-documentpreview/markdown' }, Markdown);
   const overlay = add('shell.overlay', { id: 'context-menu' }, Menu);
   const actions = add('sidebar.right.tab.document.actions', { id: 'open-in-app' }, Actions);
@@ -63,6 +64,7 @@ const { createRequire } = require('node:module');
     assert.equal(browser.key, undefined, 'installed entries keep dispatch keys in options');
     assert.equal(browser.options.key, '@deepseek-ai/dsh-client-ui-sidebar-browser');
     assert.notEqual(browser.component, Browser, 'remote browser must be decorated on the actual installed registry shape');
+    assert.notEqual(document.component, Document, 'document file actions use the original tab registry seat');
     assert.notEqual(markdown.component, Markdown, 'Markdown media must use the same owning Session');
     assert.notEqual(overlay.component, Menu, 'already-bound native menu must be filtered');
     assert.notEqual(actions.component, Actions, 'native app actions must be hidden for remote paths');

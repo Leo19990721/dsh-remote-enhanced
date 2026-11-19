@@ -17,10 +17,13 @@ function fixture() {
 test('preview ownership separates identical ports on different computers and preserves URL suffix', async () => {
   const { manager, stop, calls, entries } = fixture();
   try {
-    const one = await manager.open(id('one'), 'http://127.0.0.1:41788/map/?q=1#here', 'a', stop.signal);
-    const two = await manager.open(id('two'), 'http://localhost:41788/', 'b', stop.signal);
+    const url = 'http://localhost:41788/docs/?q=1#here';
+    const one = await manager.open(id('one'), url, 'a', stop.signal);
+    const two = await manager.open(id('two'), url, 'b', stop.signal);
     assert.notEqual(new URL(one.url).origin, new URL(two.url).origin);
-    assert.equal(new URL(one.url).pathname + new URL(one.url).search + new URL(one.url).hash, '/map/?q=1#here');
+    assert.equal(new URL(one.url).pathname + new URL(one.url).search + new URL(one.url).hash, '/docs/?q=1#here');
+    assert.deepEqual([one, two].map(item => [item.hostId, item.originalUrl, item.filePreviewAvailable]), [['one', url, false], ['two', url, false]]);
+    assert.throws(() => manager.fileActions('a', stop.signal), /网页文件预览未开启/);
     assert.deepEqual(calls.map(row => row[0]), ['one', 'two']);
     await manager.release('a'); assert.equal(entries[0].closed, 1); assert.equal(entries[1].closed, 0);
   } finally { await manager.close(); }

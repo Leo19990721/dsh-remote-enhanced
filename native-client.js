@@ -1,8 +1,8 @@
 window.__ModuleLoader__.load({
-  id: '@local/dsh-unified-sessions',
+  id: '@local/dsh-remote-enhanced',
   factory(require) {
     const React = require('react');
-    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","downloadLoading":"正在读取远端文件…","downloadStarted":"已开始下载到本机。","downloadSaved":"文件已保存到本机。","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"整理地图文件","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击地图中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","connectionRateLimited":"请求太多，请等一会儿再试。","connectionServiceUnavailable":"远程服务暂时不可用，请稍后再试。","connectionHostOffline":"电脑不在线。请在那台电脑打开 DSH，再试一次。","connectionConnectionTimeout":"连接超时。请确认那台电脑已联网并打开 DSH，再试一次。","connectionAuthorizationRequired":"请打开远程工作台，检查登录和设备授权。","connectionConnectionInterrupted":"远程连接断开了。请在远程工作台查看连接状态。","connectionConnectionFailed":"暂时连不上。请确认那台电脑已联网并打开 DSH。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","downloadLoading":"Reading remote file…","downloadStarted":"Download to this computer started.","downloadSaved":"File saved on this computer.","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","connectionRateLimited":"Too many requests. Wait a moment, then try again.","connectionServiceUnavailable":"Remote is temporarily unavailable. Try again later.","connectionHostOffline":"This computer is offline. Open DSH on it, then try again.","connectionConnectionTimeout":"Connection timed out. Check that the other computer is online and DSH is open, then try again.","connectionAuthorizationRequired":"Open Remote Workbench to check sign-in and device access.","connectionConnectionInterrupted":"The connection dropped. Check its status in Remote Workbench.","connectionConnectionFailed":"Could not connect. Check that the other computer is online and DSH is open."}};
+    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","fileMenu":"文件操作","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"整理地图文件","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击地图中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","connectionRateLimited":"请求太多，请等一会儿再试。","connectionServiceUnavailable":"远程服务暂时不可用，请稍后再试。","connectionHostOffline":"电脑不在线。请在那台电脑打开 DSH，再试一次。","connectionConnectionTimeout":"连接超时。请确认那台电脑已联网并打开 DSH，再试一次。","connectionAuthorizationRequired":"请打开远程工作台，检查登录和设备授权。","connectionConnectionInterrupted":"远程连接断开了。请在远程工作台查看连接状态。","connectionConnectionFailed":"暂时连不上。请确认那台电脑已联网并打开 DSH。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","fileMenu":"File actions","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","connectionRateLimited":"Too many requests. Wait a moment, then try again.","connectionServiceUnavailable":"Remote is temporarily unavailable. Try again later.","connectionHostOffline":"This computer is offline. Open DSH on it, then try again.","connectionConnectionTimeout":"Connection timed out. Check that the other computer is online and DSH is open, then try again.","connectionAuthorizationRequired":"Open Remote Workbench to check sign-in and device access.","connectionConnectionInterrupted":"The connection dropped. Check its status in Remote Workbench.","connectionConnectionFailed":"Could not connect. Check that the other computer is online and DSH is open."}};
     // One authenticated socket carries every independently cancellable logical
 // stream. Separate long-lived HTTP fetches would exhaust Chromium's per-origin
 // connection pool and block ordinary Session commands.
@@ -265,6 +265,27 @@ async function installSessionCarrier(ctx, { fetch: send = globalThis.fetch, sign
   return {
     get viewId() { return viewId; }, baseHost,
     mediaUrl(sessionId, path) { return new URL('dsh-session-hosts/media?' + new URLSearchParams({ viewId, sessionId, path }), document.baseURI).href; },
+    get canRevealSavedFile() { return !!registry.get('session/openWorkspacePath'); },
+    async revealSavedFile(path, signal) {
+      const endpoint = 'session/openWorkspacePath';
+      const requestSignal = AbortSignal.any([active, ...signal ? [signal] : [], AbortSignal.timeout(15000)]);
+      requestSignal.throwIfAborted();
+      if (!registry.get(endpoint) || typeof path !== 'string' || !path) throw new Error('Saved file location unavailable.');
+      const request = { endpoint, payload: { args: { request: { path, action: 'reveal' } } } };
+      if (baseHost === 'local') return viewCall('call', request, requestSignal);
+      // A Desktop save returns a path on this computer, even when the open
+      // Session or the original Remote target is elsewhere. Keep the native
+      // reveal method and its path checks; use a short-lived local view only.
+      const attached = await rpc('attach', { baseHost: 'local' }, requestSignal);
+      if (!attached.ok) return attached;
+      const localView = attached.value.viewId;
+      if (typeof localView !== 'string' || !localView || localView === viewId) throw new Error('Local view unavailable.');
+      try {
+        if (attached.value.baseHost !== 'local') throw new Error('Local view unavailable.');
+        requestSignal.throwIfAborted();
+        return await rpc('call', { ...request, viewId: localView }, requestSignal);
+      } finally { await rpc('close', { viewId: localView }, AbortSignal.timeout(5000)).catch(() => {}); }
+    },
     previewOpen: (sessionId, url, leaseId, signal, options = {}) => viewCall('previewOpen', { sessionId, url, leaseId, fileMode: options.fileMode === true }, signal || active),
     previewFileClaim: (leaseId, actionId, signal) => viewCall('previewFileClaim', { leaseId, actionId }, signal || active),
     previewFiles: (leaseId, signal) => wrappedOpen('/api', '$previewFiles', { leaseId }, signal || active),
@@ -412,14 +433,20 @@ function installSessionResidency(sessions, { maxSessions = 12 } = {}) {
 }
 
     function browserInputUrl(value) {
-  // Match the native address bar's scheme inference before choosing the Host.
-  // Otherwise `localhost:41788` passes this guard and is opened on this PC.
+  if (typeof value !== 'string') return;
   const trimmed = value.trim();
   const explicit = /^[A-Za-z][A-Za-z\d+.-]*:(?!\d+(?:[/?#]|$))/u.test(trimmed);
-  try { return new URL(explicit ? trimmed : `https://${trimmed}`); } catch { return undefined; }
+  try {
+    if (explicit) return new URL(trimmed);
+    // Remote's authorized loopback preview uses HTTP. Treat omitted schemes on
+    // its loopback addresses accordingly; never downgrade explicit HTTPS.
+    const localPage = new URL(`http://${trimmed}`);
+    return loopbackHostname(localPage.hostname) ? localPage : new URL(`https://${trimmed}`);
+  } catch { return undefined; }
 }
+function loopbackHostname(hostname) { return ['localhost', '127.0.0.1', '[::1]'].includes(hostname); }
 function isLoopbackPage(value) {
-  return ['localhost', '127.0.0.1', '[::1]'].includes(browserInputUrl(value)?.hostname);
+  return loopbackHostname(browserInputUrl(value)?.hostname);
 }
 
 function previewErrorMessage(error, value, source, t) {
@@ -472,7 +499,8 @@ function remoteBrowser(native, carrier, sessionId, { notify = () => {}, signal, 
     const original = originalOf(value); tab.original = original; tab.busy = true; tab.error = undefined; tab.snapshot = undefined; update(tab);
     try {
       let destination = original;
-      const target = isLoopbackPage(original) ? browserInputUrl(original) : undefined;
+      const parsed = browserInputUrl(original);
+      const target = loopbackHostname(parsed?.hostname) ? parsed : undefined;
       const port = target ? target.port || (target.protocol === 'https:' ? '443' : '80') : undefined;
       // Occurrences are never reused after closing a tab. Every explicit file
       // navigation gets a new lease, invalidating native history's old origins.
@@ -618,40 +646,58 @@ function remoteBrowser(native, carrier, sessionId, { notify = () => {}, signal, 
 }
 
 
+// Keep the file address's Session even when a preview was opened in another
+// pane. Decode the native address without URL-normalizing its path segments.
+function sessionFileFromTab(tab) {
+  if (typeof tab?.contentId !== 'string') return;
+  const parts = /^dsh-resource:\/\/file\/session\/([^/?#]+)\/([^?#]+)/.exec(tab.contentId);
+  if (!parts) return;
+  try { return { sessionId: decodeURIComponent(parts[1]), path: parts[2].split('/').map(decodeURIComponent).join('/') }; } catch { /* Invalid resource address. */ }
+}
+
 // Menu callbacks keep the clicked Session. Never pass a remote path to this
 // computer's native open/reveal APIs, including menus loaded before the plugin.
-function installPeerMenuSafety(ctx, baseHost, openFile, saveFile, t) {
+function installPeerMenuSafety(ctx, baseHost, openFile, fileActions, t) {
   const menus = ctx.contextMenus, original = menus.resolve, disposers = [];
   const remote = target => {
-    const value = target?.value, host = sessionHost(value?.sessionId, baseHost);
+    const value = target?.value;
+    const owner = target?.kind === 'tab' ? sessionFileFromTab(value?.tab)?.sessionId : undefined;
+    const host = sessionHost(owner ?? value?.sessionId, baseHost);
     if (host !== undefined) return host !== 'local';
     if (target?.kind === 'workspace' && value?.workspaceId?.startsWith('dsh-peer:')) {
       try { return JSON.parse(value.workspaceId.slice(9))[0] !== 'local'; } catch { return false; }
     }
     return false;
   };
-  const unsafe = row => row.id.startsWith('open-in-app.') || row.id.startsWith('file-actions.');
-  const filter = (items, target) => remote(target) ? items.filter(row => !unsafe(row)) : items;
+  // An image with only a URL uses the normal URL-based image actions, not a
+  // workspace path. Leave those actions to their native owner.
+  const unsafe = (id, target) => id.startsWith('open-in-app.') || (id.startsWith('file-actions.')
+    && (target.kind !== 'image' || !!target.value.path));
+  const filter = (items, target) => remote(target) ? items.filter(row => !unsafe(row.id, target)) : items;
   const resolve = target => {
     const native = original.call(menus, target);
     if (!remote(target)) return native;
     let previous, snapshot;
     return { ...native, source: { subscribe: native.source.subscribe.bind(native.source), getSnapshot: () => {
       const current = native.source.getSnapshot(); if (previous !== current) { previous = current; snapshot = filter(current, target); } return snapshot;
-    } }, select(id) { if (!unsafe({ id })) native.select(id); } };
+    } }, select(id) { if (!unsafe(id, target)) native.select(id); } };
   };
   menus.resolve = resolve;
   disposers.push(() => { if (menus.resolve === resolve) menus.resolve = original; });
-  for (const kind of ['file', 'directory', 'image', 'url', 'workspace']) disposers.push(menus.register({ id: 'peer-resource', target: kind, order: 100, resolve: value => {
+  for (const kind of ['file', 'directory', 'image', 'url', 'workspace', 'tab']) disposers.push(menus.register({ id: 'peer-resource', target: kind, order: 100, resolve: value => {
+    if (kind === 'tab') {
+      const file = sessionFileFromTab(value.tab);
+      return file && remote({ kind: 'file', value: file }) ? fileActions.menu(file.sessionId, file.path) : [];
+    }
     if (!remote({ kind, value })) return [];
-    const { sessionId, path, url } = value;
+    const { sessionId, path, url, line } = value;
     if (!sessionId) return [{ id: 'remote-only', label: t('remoteApplication'), disabled: true }];
     if (kind === 'url') return [{ id: 'open', label: t('openSidebar'), run: () => ctx.sidebarRight.openTabIn(sessionId, 'browser', { params: { url } }) }, { id: 'copy', label: t('copyLink'), run: () => navigator.clipboard.writeText(url) }];
-    if (!path) return [];
+    if (typeof path !== 'string' || !path) return [];
     return [
-      { id: 'open', label: t('openSidebar'), run: () => openFile(sessionId, path) },
-      ...['file', 'image'].includes(kind) ? [{ id: 'download', label: t('download'), run: () => saveFile(sessionId, path) }] : [],
-      { id: 'copy', label: t('copyRemotePath'), run: () => navigator.clipboard.writeText(path) },
+      { id: 'open', label: t('openSidebar'), icon: { key: 'open-in-app.sidebar' }, run: () => openFile(sessionId, path, { line }) },
+      ...(kind === 'file' || kind === 'image' ? fileActions.menu(sessionId, path) : []),
+      { id: 'copy', label: t('copyRemotePath'), icon: { key: 'open-in-app.copy' }, run: () => navigator.clipboard.writeText(path) },
     ];
   } }));
   // The shortcut registry retains the original command objects. This narrow
@@ -685,11 +731,70 @@ function peerFileAddress(sessionId, path) {
 function peerDirectoryAddress(sessionId, path) { return `dsh-resource://peer-directory/session/${encodeURIComponent(sessionId)}/${encodeURIComponent(path)}`; }
 function directoryPath(address) { const parts = new URL(address).pathname.split('/'); return decodeURIComponent(parts.slice(3).join('/')); }
 
+function createPeerFileActions(ctx, carrier, signal, platform = () => globalThis.document?.documentElement?.dataset.platform) {
+  const t = ctx.locale.bind('fileActions');
+  const canSaveAs = () => ctx.fileActions.canSaveAs === true;
+  async function save(sessionId, path, mode = 'download') {
+    if (signal.aborted) return;
+    const host = sessionHost(sessionId, carrier.baseHost);
+    if (!sessionId || !host || host === 'local' || typeof path !== 'string' || !path) throw new Error(t('menu.saveFailed'));
+    if (mode !== 'download' && !(mode === 'saveAs' && canSaveAs())) throw new Error(t('menu.saveFailed'));
+    let result;
+    try {
+      result = await ctx.fileActions.save({
+        name: path.split(/[\\/]/).at(-1),
+        url: carrier.mediaUrl(sessionId, path),
+        async read(readSignal) {
+          const active = AbortSignal.any([signal, readSignal]);
+          active.throwIfAborted();
+          const source = await ctx.remote.workspaceFiles.readBytes(sessionId, path, {}, active);
+          active.throwIfAborted();
+          if (!source.ok) throw Object.assign(new Error(source.error.message), source.error);
+          // Keep the source extension and original bytes, including unknown types.
+          return new Blob([source.value.data], { type: 'application/x-dsh-original' });
+        },
+      }, mode);
+    } catch (error) {
+      if (signal.aborted) return;
+      throw error;
+    }
+    if (signal.aborted || result.status === 'cancelled') return;
+    if (result.status === 'requested') {
+      ctx.contextMenus.notify(t('menu.downloadStarted'), true);
+    } else if (result.status === 'saved') {
+      const savedPath = result.path;
+      const reveal = typeof savedPath === 'string' && savedPath && carrier.canRevealSavedFile ? {
+        label: t(platform() === 'darwin' ? 'menu.finder' : 'menu.reveal'),
+        failureLabel: t('path.revealError'),
+        async run() {
+          if (signal.aborted) return;
+          const result = await carrier.revealSavedFile(savedPath, signal);
+          if (!result.ok) throw new Error(t('path.revealError'));
+        },
+      } : undefined;
+      ctx.contextMenus.notify(t(mode === 'download' ? 'menu.downloaded' : 'menu.saved'), true, reveal);
+    }
+  }
+  function menu(sessionId, path) {
+    const row = (mode, icon) => ({
+      id: mode,
+      label: t('menu.' + mode),
+      icon: { key: 'file-actions.' + icon },
+      failureLabel: t('menu.saveFailed'),
+      run: () => save(sessionId, path, mode),
+    });
+    return [row('download', 'download'), ...(canSaveAs() ? [row('saveAs', 'save')] : [])];
+  }
+  return { save, menu };
+}
+
 // Version-scoped decorators on native entry Components. Inject caches and native
 // service objects are untouched; already-bound entries receive the adaptation.
-function installSessionResources(ctx, carrier, React, signal) {
+function installSessionResources(ctx, carrier, React, lifetime) {
+  const stop = new AbortController(), signal = AbortSignal.any([lifetime, stop.signal]);
   const t = ctx.locale.bind('remoteWorkspaces'), patched = new Map(), disposers = [], browsers = new Map();
   const remote = id => { const host = sessionHost(id, carrier.baseHost); return host !== undefined && host !== 'local'; };
+  const fileActions = createPeerFileActions(ctx, carrier, signal);
   const notify = message => ctx.contextMenus.notify(message);
   function PeerButton({ children, size: _size, variant: _variant, style, ...props }) {
     return React.createElement('button', { type: 'button', ...props, style: { color: 'inherit', background: 'transparent', border: '1px solid var(--dsw-alias-border-l3)', borderRadius: 6, padding: '4px 8px', font: 'inherit', cursor: props.disabled ? 'default' : 'pointer', opacity: props.disabled ? 0.5 : 1, ...style } }, children);
@@ -733,21 +838,11 @@ function installSessionResources(ctx, carrier, React, signal) {
     resourceAddress: path => peerFileAddress(id, resolvePeerPath(base, path)),
     labels: previous.labels || { open: t('imageOpen'), loading: t('connecting'), failed: t('fileUnavailable'), dialog: t('imageOpen'), close: t('close') },
   });
-  async function saveFile(id, path) {
-    notify(t('downloadLoading'));
-    const result = await ctx.fileActions.save({ name: path.split(/[\\/]/).at(-1), url: carrier.mediaUrl(id, path), read: async active => {
-      // Saving opaque original bytes must preserve the supplied extension. An
-      // untyped blob becomes text/plain in Electron and renames even .docx to
-      // .txt; octet-stream maps to .bin in the native filename resolver.
-      const file = await checked(ctx.remote.workspaceFiles.readBytes(id, path, {}, active)); return new Blob([file.data], { type: 'application/x-dsh-original' });
-    } }, ctx.fileActions.canSaveAs ? 'saveAs' : 'download');
-    if (result.status !== 'cancelled') ctx.contextMenus.notify(t(result.status === 'requested' ? 'downloadStarted' : 'downloadSaved'), true);
-  }
-  function Download({ sessionId, absolutePath }) {
-    const [busy, setBusy] = React.useState(false);
-    return React.createElement(PeerButton, { size: 'sm', variant: 'ghost', disabled: busy, onClick: () => {
-      setBusy(true); void saveFile(sessionId, absolutePath).catch(error => notify(error.message || t('fileUnavailable'))).finally(() => setBusy(false));
-    } }, t(busy ? 'downloadLoading' : 'download'));
+  function FileMenu({ sessionId, path, renderFactorySlot }) {
+    if (!remote(sessionId) || !path || typeof renderFactorySlot !== 'function') return null;
+    return renderFactorySlot('contextMenu.button', {
+      target: { kind: 'file', value: { sessionId, path } }, label: t('fileMenu'), size: 'sm',
+    });
   }
   function Directory(props) {
     const { tab } = props.useTabInfo(), path = directoryPath(tab.navigation.address);
@@ -769,11 +864,12 @@ function installSessionResources(ctx, carrier, React, signal) {
       state.loading ? React.createElement('p', { role: 'status' }, t('connecting')) : state.error ? React.createElement('p', { role: 'alert' }, state.error) :
         React.createElement('div', null, ...(state.value?.entries || []).map(item => React.createElement('div', { key: item.name, style: { display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' } },
           React.createElement(PeerButton, { size: 'sm', variant: 'ghost', onClick: () => visit(resolvePeerPath(current, item.name), item.type === 'directory'), style: { justifyContent: 'flex-start', flex: 1 } }, (item.type === 'directory' ? '📁 ' : '📄 ') + item.name),
-          item.type === 'file' && React.createElement(Download, { sessionId: props.sessionId, absolutePath: resolvePeerPath(current, item.name) }))),
+          item.type === 'file' && React.createElement(FileMenu, { sessionId: props.sessionId, path: resolvePeerPath(current, item.name), renderFactorySlot: props.renderFactorySlot }))),
         state.value?.truncated && React.createElement('p', { role: 'status' }, t('directoryTruncated'))));
   }
-  disposers.push(ctx.sidebarRightTabs.register({ id: '@local/dsh-unified-sessions/directory', kind: 'peerDirectory', patterns: ['dsh-resource://peer-directory/**'], priority: 'extension', title: address => directoryPath(address).split(/[\\/]/).filter(Boolean).at(-1) || t('directory') }));
-  disposers.push(ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({ name: 'sidebar.right.pane.tab', key: '@local/dsh-unified-sessions/directory' }, Directory)));
+  const directoryProviderId = '@local/dsh-remote-enhanced/directory';
+  disposers.push(ctx.sidebarRightTabs.register({ id: directoryProviderId, kind: 'peerDirectory', patterns: ['dsh-resource://peer-directory/**'], priority: 'extension', title: address => directoryPath(address).split(/[\\/]/).filter(Boolean).at(-1) || t('directory') }));
+  disposers.push(ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({ name: 'sidebar.right.pane.tab', key: directoryProviderId }, Directory)));
   const watch = (name, decorate) => {
     const reconcile = () => { for (const entry of ctx.slots.entries(name)) {
       if (patched.has(entry) || typeof entry.component !== 'function' && typeof entry.component !== 'object') continue;
@@ -795,14 +891,35 @@ function installSessionResources(ctx, carrier, React, signal) {
     const result = nativeResult(Native, props);
     return remote(props.sessionId) ? decorateMediaTree(result, props.sessionId, cwdOf(props.sessionId)) : result;
   } : undefined);
-  for (const seat of ['sidebar.right.tab.document.actions', 'sidebar.right.tab.document.unpreviewable', 'sidebar.right.tab.files.actions', 'deliverables.file.actions', 'deliverables.review.file.actions']) {
+  const documentActions = 'sidebar.right.tab.document.actions', unpreviewable = 'sidebar.right.tab.document.unpreviewable';
+  for (const seat of [documentActions, unpreviewable, 'sidebar.right.tab.files.actions', 'deliverables.file.actions', 'deliverables.review.file.actions']) {
     watch(seat, (entry, Native) => entry.options.id === 'open-in-app' || entry.registrant === '@deepseek-ai/dsh-client-ui-open-in-app' ? function PeerActions(props) {
-      return remote(props.sessionId) ? null : React.createElement(Native, props);
+      return remote(props.sessionId) || remote(props.peerFileOwner) ? null : React.createElement(Native, props);
     } : undefined);
   }
-  for (const name of ['sidebar.right.tab.document.actions', 'sidebar.right.tab.document.unpreviewable']) {
-    disposers.push(ctx.slots.inject(name, () => ctx.slots.register({ name, id: 'peer-download' }, props => remote(props.sessionId) ? React.createElement(Download, props) : null)));
-  }
+  watch('sidebar.right.pane.tab', (entry, Native) => entry.options.key === '@deepseek-ai/dsh-client-ui-sidebar-documentpreview' ? function PeerDocument(props) {
+    const { tab } = props.useTabInfo();
+    const file = sessionFileFromTab(tab);
+    if (!file) return React.createElement(Native, props);
+    const peerFile = remote(file.sessionId);
+    // Keep the menu with the file's address, even if a different Session owns the pane.
+    const renderSlot = (name, input, ...rest) => {
+      if (name !== documentActions && name !== unpreviewable) return props.renderSlot(name, input, ...rest);
+      const original = props.renderSlot(name, { ...input, peerFileOwner: file.sessionId }, ...rest);
+      return name === documentActions ? React.createElement(React.Fragment, null, original, React.createElement(FileMenu, {
+        ...file, renderFactorySlot: props.renderFactorySlot,
+      })) : original;
+    };
+    const useContextMenu = () => {
+      const menu = props.useContextMenu();
+      return { ...menu, getTriggerProps: (target, handlers) => menu.getTriggerProps(target?.kind === 'file'
+        ? { ...target, value: { ...target.value, ...file } } : target, handlers) };
+    };
+    return React.createElement(Native, {
+      ...props, renderSlot: peerFile ? renderSlot : props.renderSlot,
+      useContextMenu: file.sessionId === props.sessionId ? props.useContextMenu : useContextMenu,
+    });
+  } : undefined);
   function BrowserFiles({ adapter, useTabInfo, useBrowserState, sessionId }) {
     const { tab } = useTabInfo();
     // The panel and native body each subscribe in their own normal Hook order.
@@ -812,7 +929,7 @@ function installSessionResources(ctx, carrier, React, signal) {
     if (!state.available && !state.enabled) return null;
     const workspace = ctx.workspaces?.list.getSnapshot().items.find(row => row.sessionIds.includes(sessionId));
     const act = mode => { void adapter.consumeFile(tab.id, mode, ({ sessionId: owner, path, kind }) => mode === 'download'
-      ? saveFile(owner, path)
+      ? fileActions.save(owner, path, ctx.fileActions.canSaveAs ? 'saveAs' : 'download')
       : kind === 'folder' ? ctx.sidebarRight.openResourceIn(owner, peerDirectoryAddress(owner, path)) : openFile(owner, path)); };
     return React.createElement('section', { 'aria-label': t('mapFiles'), 'aria-busy': !!state.busy, style: { padding: '6px 10px', borderBottom: '1px solid var(--dsw-alias-border-l3)', background: 'var(--dsw-alias-bg-base)', flexShrink: 0, font: 'inherit', color: 'var(--dsw-alias-label-primary)' } },
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 } },
@@ -855,7 +972,7 @@ function installSessionResources(ctx, carrier, React, signal) {
       React.createElement(BrowserFiles, { adapter, useTabInfo: props.useTabInfo, useBrowserState, sessionId: props.sessionId }),
       React.createElement('div', { style: { flex: 1, minHeight: 0, position: 'relative' } }, React.createElement(Native, { ...props, mount: adapter.mount, loadUrl: adapter.loadUrl, restore: adapter.restore, reload: adapter.reload, goBack: adapter.goBack, goForward: adapter.goForward, useBrowserState })));
   } : undefined);
-  const menuSafety = installPeerMenuSafety(ctx, carrier.baseHost, openFile, saveFile, t);
+  const menuSafety = installPeerMenuSafety(ctx, carrier.baseHost, openFile, fileActions, t);
   disposers.push(() => menuSafety.dispose());
   watch('shell.overlay', (entry, Native) => entry.options.id === 'context-menu' ? function PeerMenuOverlay(props) {
     const cache = React.useRef();
@@ -867,6 +984,7 @@ function installSessionResources(ctx, carrier, React, signal) {
     return React.createElement(Native, { ...props, useStore });
   } : undefined);
   return async () => {
+    stop.abort();
     for (const dispose of disposers.reverse()) dispose();
     for (const [entry, saved] of patched) if (entry.component === saved.Wrapper) entry.component = saved.Native;
     patched.clear(); await Promise.all([...browsers.values()].map(browser => browser.dispose())); browsers.clear();

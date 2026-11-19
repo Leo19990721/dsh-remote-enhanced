@@ -152,6 +152,27 @@ export async function installSessionCarrier(ctx, { fetch: send = globalThis.fetc
   return {
     get viewId() { return viewId; }, baseHost,
     mediaUrl(sessionId, path) { return new URL('dsh-session-hosts/media?' + new URLSearchParams({ viewId, sessionId, path }), document.baseURI).href; },
+    get canRevealSavedFile() { return !!registry.get('session/openWorkspacePath'); },
+    async revealSavedFile(path, signal) {
+      const endpoint = 'session/openWorkspacePath';
+      const requestSignal = AbortSignal.any([active, ...signal ? [signal] : [], AbortSignal.timeout(15000)]);
+      requestSignal.throwIfAborted();
+      if (!registry.get(endpoint) || typeof path !== 'string' || !path) throw new Error('Saved file location unavailable.');
+      const request = { endpoint, payload: { args: { request: { path, action: 'reveal' } } } };
+      if (baseHost === 'local') return viewCall('call', request, requestSignal);
+      // A Desktop save returns a path on this computer, even when the open
+      // Session or the original Remote target is elsewhere. Keep the native
+      // reveal method and its path checks; use a short-lived local view only.
+      const attached = await rpc('attach', { baseHost: 'local' }, requestSignal);
+      if (!attached.ok) return attached;
+      const localView = attached.value.viewId;
+      if (typeof localView !== 'string' || !localView || localView === viewId) throw new Error('Local view unavailable.');
+      try {
+        if (attached.value.baseHost !== 'local') throw new Error('Local view unavailable.');
+        requestSignal.throwIfAborted();
+        return await rpc('call', { ...request, viewId: localView }, requestSignal);
+      } finally { await rpc('close', { viewId: localView }, AbortSignal.timeout(5000)).catch(() => {}); }
+    },
     previewOpen: (sessionId, url, leaseId, signal, options = {}) => viewCall('previewOpen', { sessionId, url, leaseId, fileMode: options.fileMode === true }, signal || active),
     previewFileClaim: (leaseId, actionId, signal) => viewCall('previewFileClaim', { leaseId, actionId }, signal || active),
     previewFiles: (leaseId, signal) => wrappedOpen('/api', '$previewFiles', { leaseId }, signal || active),

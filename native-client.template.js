@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: '@local/dsh-unified-sessions',
+  id: '@local/dsh-remote-enhanced',
   factory(require) {
     const React = require('react');
     const dictionaries = /* DICTIONARIES */ {};

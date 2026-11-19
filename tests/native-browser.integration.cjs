@@ -57,7 +57,7 @@ const { createRequire } = require('node:module');
   const tick = () => new Promise(resolve => setImmediate(resolve));
   try {
     adapter.mount({ tabId: 't', signal: stop.signal, viewportId: 'synthetic', applicationOrigin: 'http://127.0.0.1:3109',
-      initialUrl: 'http://localhost:41788/map', openTab: url => opened.push(url) });
+      initialUrl: 'localhost:41788/map', openTab: url => opened.push(url) });
     await tick();
     assert.deepEqual(loads, ['http://dsh-synthetic.localhost:1234/map']);
     assert.equal(writes.at(-1)[1].entries[0].url, 'http://localhost:41788/map');

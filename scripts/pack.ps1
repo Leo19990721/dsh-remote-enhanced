@@ -72,7 +72,7 @@ for (let offset = 0; offset + 512 <= archive.length;) {
   offset += 512 + Math.ceil(size / 512) * 512;
 }
 const manifest = JSON.parse(files.get('package.json'));
-assert.equal(manifest.name, '@local/dsh-unified-sessions');
+assert.equal(manifest.name, '@local/dsh-remote-enhanced');
 assert.equal(manifest.version, process.argv[2]);
 assert.equal(manifest.private, true);
 assert.equal(manifest.license, 'MIT');
@@ -108,7 +108,11 @@ function verifyExport(value) {
   } else assert.ok(files.has(target), 'Missing export: ' + target);
 }
 verifyExport(manifest.exports);
-assert.ok(files.has(manifest.dsh.bundle.patch.replace(/^\.\//, '')));
+const bundlePatch = files.get(manifest.dsh.bundle.patch.replace(/^\.\//, ''));
+const client = files.get(manifest.exports['./client'].replace(/^\.\//, ''));
+assert.ok(bundlePatch);
+assert.equal(/^\s*name:\s*'([^']+)'/m.exec(bundlePatch)?.[1], manifest.name, 'Bundle entry must load the packed package');
+assert.equal(/^window\.__ModuleLoader__\.load\(\{\s*id:\s*'([^']+)'/.exec(client)?.[1], manifest.name, 'Client module id must match the packed package');
 assert.match(files.get('cordis.patch.yml'), /filePreviewTargets:\s*\[\]/);
 assert.doesNotMatch(files.get('cordis.patch.yml'), /profileDirectory|hostId:|port:/);
 assert.doesNotMatch(files.get('native-client.js'), /\/\* (?:STREAMS|CARRIER|MODELS|RESIDENCY|BROWSER|RESOURCE_MENUS|RESOURCES|DICTIONARIES) \*\//);
