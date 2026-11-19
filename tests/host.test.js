@@ -64,7 +64,7 @@ test('adapter uses its declared WebSocket dependency without loading a profile r
   const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
   assert.deepEqual(manifest.dependencies, { semver: '7.8.6', ws: '8.18.3' });
   assert.equal(manifest.peerDependencies['ds-harness-remote'], '0.6.5');
-  assert.equal(manifest.engines.dsh, '>=0.2.2-rc.3 <0.3.0-0');
+  assert.equal(manifest.engines.dsh, '>=0.2.2-rc.3');
   assert.equal(manifest.engines.node, '>=24');
 });
 test('adapter rejects an unverified Remote manifest before using a carrier', async t => {

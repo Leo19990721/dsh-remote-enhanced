@@ -15,7 +15,12 @@ const manifest = require('../package.json');
   const { version: installed } = resolve(installAnchor);
   const boot = await import(pathToFileURL(resolve.resolve('@deepseek-ai/dsh-app-boot')).href);
   assert.equal(boot.getDshRuntimeVersion(), installed);
-  assert.equal(boot.evaluatePluginCompatibility(manifest, {}, installed), undefined, 'installed DSH must admit the bundle without an exemption');
+  assert.equal(boot.evaluatePluginCompatibility(manifest), undefined, 'installed DSH must admit the bundle without an exemption');
+  const comparisons = [
+    [installed, 'pass'], ['0.2.2-rc.2', 'fail'], ['0.2.2-rc.3', 'pass'], ['0.2.3-alpha.1', 'pass'],
+    ['0.3.0-0', 'pass'], ['0.3.0-alpha.1', 'pass'], ['0.3.0-rc.1', 'pass'], ['0.3.0', 'pass'],
+    ['1.0.0-rc.1', 'pass'], ['2.0.0', 'pass'],
+  ];
 
   const dir = await mkdtemp(join(tmpdir(), 'dsh-unified-sessions-installed-check-'));
   try {
@@ -35,11 +40,21 @@ const manifest = require('../package.json');
     assert.deepEqual(health.checks.find(row => row.id === 'dshVersion'), {
       id: 'dshVersion', state: 'pass', expected: manifest.engines.dsh, actual: installed,
     });
-    for (peerVersion of [installed, '0.2.2-rc.2', '0.2.2-rc.3', '0.2.3-alpha.1', '0.3.0-0', '0.3.0-alpha.1', '0.3.0']) {
-      const expected = boot.evaluatePluginCompatibility(manifest, {}, peerVersion) === undefined ? 'pass' : 'fail';
+    for (const [version, state] of comparisons) {
+      const issue = boot.evaluatePluginCompatibility(manifest, {}, version);
+      if (state === 'pass') assert.equal(issue, undefined, version);
+      else assert.deepEqual(issue, {
+        name: manifest.name, version: manifest.version, runtimeVersion: version,
+        requirements: { 'engines.dsh': manifest.engines.dsh }, exempted: false,
+      });
+      peerVersion = version;
       const result = await selfCheck(ctx, {}, {}, new AbortController().signal);
-      assert.equal(result.hosts[0].checks.find(row => row.id === 'dshVersion').state, expected, peerVersion);
+      assert.deepEqual(result.local, health);
+      assert.deepEqual(result.hosts[0].checks.find(row => row.id === 'dshVersion'), {
+        id: 'dshVersion', state, expected: manifest.engines.dsh, actual: version,
+      });
     }
     console.log(`PASS installed DSH ${installed}: launcher and both health checks agree without a version exemption`);
+    console.log(comparisons.map(([version, state]) => `${version}=${state}`).join(', '));
   } finally { await rm(dir, { recursive: true, force: true }); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
