@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-remote-enhanced",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "type": "module",
   "description": "Show remote folders beside local folders in the native DSH workspace list.",
@@ -9,7 +9,6 @@
   "homepage": "https://github.com/Leo19990721/dsh-remote-enhanced#readme",
   "bugs": { "url": "https://github.com/Leo19990721/dsh-remote-enhanced/issues" },
   "engines": {
-    "dsh": ">=0.2.2-rc.3",
     "node": ">=24"
   },
   "packageManager": "pnpm@11.28.5",

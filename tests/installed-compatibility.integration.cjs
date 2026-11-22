@@ -17,9 +17,9 @@ const manifest = require('../package.json');
   assert.equal(boot.getDshRuntimeVersion(), installed);
   assert.equal(boot.evaluatePluginCompatibility(manifest), undefined, 'installed DSH must admit the bundle without an exemption');
   const comparisons = [
-    [installed, 'pass'], ['0.2.2-rc.2', 'fail'], ['0.2.2-rc.3', 'pass'], ['0.2.3-alpha.1', 'pass'],
-    ['0.3.0-0', 'pass'], ['0.3.0-alpha.1', 'pass'], ['0.3.0-rc.1', 'pass'], ['0.3.0', 'pass'],
-    ['1.0.0-rc.1', 'pass'], ['2.0.0', 'pass'],
+    installed, '0.2.2-rc.2', '0.2.2-rc.3', '0.2.3-alpha.1',
+    '0.3.0-0', '0.3.0-alpha.1', '0.3.0-rc.1', '0.3.0',
+    '1.0.0-rc.1', '2.0.0',
   ];
 
   const dir = await mkdtemp(join(tmpdir(), 'dsh-unified-sessions-installed-check-'));
@@ -38,23 +38,18 @@ const manifest = require('../package.json');
     };
     const health = await assertInstallation(ctx);
     assert.deepEqual(health.checks.find(row => row.id === 'dshVersion'), {
-      id: 'dshVersion', state: 'pass', expected: manifest.engines.dsh, actual: installed,
+      id: 'dshVersion', state: 'pass', actual: installed,
     });
-    for (const [version, state] of comparisons) {
-      const issue = boot.evaluatePluginCompatibility(manifest, {}, version);
-      if (state === 'pass') assert.equal(issue, undefined, version);
-      else assert.deepEqual(issue, {
-        name: manifest.name, version: manifest.version, runtimeVersion: version,
-        requirements: { 'engines.dsh': manifest.engines.dsh }, exempted: false,
-      });
+    for (const version of comparisons) {
+      assert.equal(boot.evaluatePluginCompatibility(manifest, {}, version), undefined, version);
       peerVersion = version;
       const result = await selfCheck(ctx, {}, {}, new AbortController().signal);
       assert.deepEqual(result.local, health);
       assert.deepEqual(result.hosts[0].checks.find(row => row.id === 'dshVersion'), {
-        id: 'dshVersion', state, expected: manifest.engines.dsh, actual: version,
+        id: 'dshVersion', state: 'pass', actual: version,
       });
     }
-    console.log(`PASS installed DSH ${installed}: launcher and both health checks agree without a version exemption`);
-    console.log(comparisons.map(([version, state]) => `${version}=${state}`).join(', '));
+    console.log(`PASS installed DSH ${installed}: compatibility evaluator admits the bundle and self-check reports version metadata without a gate`);
+    console.log(`Version samples: ${comparisons.join(', ')}`);
   } finally { await rm(dir, { recursive: true, force: true }); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

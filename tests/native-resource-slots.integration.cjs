@@ -8,8 +8,6 @@ const { createRequire } = require('node:module');
 (async () => {
   const resolve = createRequire(path.join(process.env.DSH_INSTALL_DIR, 'package.json'));
   const frontendManifest = resolve.resolve('@deepseek-ai/dsh-web-frontend/package.json');
-  const range = require('../package.json').engines.dsh;
-  assert.ok(require('semver').satisfies(resolve(frontendManifest).version, range, { includePrerelease: true }), 'installed frontend must satisfy the declared DSH range');
   const frontend = path.dirname(frontendManifest);
   const html = fs.readFileSync(path.join(frontend, 'dist/index.html'), 'utf8');
   const entry = html.match(/src="\.\/assets\/(index-[\w-]+\.js)"/)?.[1];

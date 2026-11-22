@@ -76,7 +76,7 @@ assert.equal(manifest.name, '@local/dsh-remote-enhanced');
 assert.equal(manifest.version, process.argv[2]);
 assert.equal(manifest.private, true);
 assert.equal(manifest.license, 'MIT');
-assert.equal(manifest.engines.dsh, '>=0.2.2-rc.3');
+assert.equal(Object.hasOwn(manifest.engines, 'dsh'), false);
 assert.equal(manifest.engines.node, '>=24');
 assert.deepEqual(manifest.dependencies, { semver: '7.8.6', ws: '8.18.3' });
 assert.equal(manifest.peerDependencies['ds-harness-remote'], '0.6.5');

@@ -31,46 +31,47 @@ test('installation checks report compatibility without loading the Remote runtim
   await assertInstallation(ctx);
 });
 test('incompatible install fails before command registration or transport changes', async t => {
-  for (const fixture of [{ remoteVersion: '0.6.4' }, { remoteVersion: '0.7.0' }, { dshVersion: '0.2.2-rc.2' }]) {
+  for (const fixture of [{ remoteVersion: '0.6.4' }, { remoteVersion: '0.7.0' }, {}]) {
     const ctx = await context(t, fixture); let touched = 0;
     ctx.commands = { register() { touched++; } }; ctx.subagents = {};
     ctx.get = new Proxy(ctx.get, { apply(target, self, args) { return args[0] === 'commands' ? ctx.commands : args[0] === 'subagents' ? ctx.subagents : target(...args); } });
     ctx.effect = () => { touched++; };
+    if (!fixture.remoteVersion) delete ctx.dshRemoteClient.gatewaySwitch;
     const original = ctx.dshRemoteClient.withToolRemote;
-    await assert.rejects(apply(ctx), { code: 'session-hosts/incompatible', message: /DSH >=0\.2\.2-rc\.3、Remote 0\.6\.5/ });
+    await assert.rejects(apply(ctx), { code: 'session-hosts/incompatible', message: /Remote 0\.6\.5 及原生 Harness 连接接口/ });
     assert.equal(touched, 0); assert.equal(ctx.dshRemoteClient.withToolRemote, original);
   }
 });
-test('local launch anchor and remote metadata use the same prerelease-inclusive DSH minimum', async t => {
-  for (const [version, state] of [
-    ['0.2.2-rc.2', 'fail'], ['0.2.2-rc.3', 'pass'], ['0.2.2-rc.4', 'pass'], ['0.2.2-rc.5', 'pass'],
-    ['0.2.2', 'pass'], ['0.2.3-alpha.1', 'pass'], ['0.2.9', 'pass'],
-    ['0.3.0-0', 'pass'], ['0.3.0-alpha.1', 'pass'], ['0.3.0-rc.1', 'pass'], ['0.3.0', 'pass'],
-    ['1.0.0-rc.1', 'pass'], ['2.0.0', 'pass'],
-  ]) {
+test('local and remote DSH version metadata is reported without a version gate', async t => {
+  for (const version of ['0.2.2-rc.2', '0.2.2-rc.5', '0.2.2', '0.3.0-rc.1', '0.3.0', '2.0.0']) {
     const ctx = await context(t, { dshVersion: version, peerDshVersion: version });
     const health = await installationHealth(ctx);
     const result = await selfCheck(ctx, {}, {}, new AbortController().signal);
     for (const checks of [health.checks, result.local.checks, result.hosts[0].checks]) {
       assert.deepEqual(checks.find(row => row.id === 'dshVersion'), {
-        id: 'dshVersion', state, expected: manifest.engines.dsh, actual: version,
+        id: 'dshVersion', state: 'pass', actual: version,
       });
     }
-    if (state === 'fail') await assert.rejects(assertInstallation(ctx), { code: 'session-hosts/incompatible', details: { checks: health.checks } });
-    else assert.equal((await assertInstallation(ctx)).state, 'pass');
+    assert.equal((await assertInstallation(ctx)).state, 'pass');
   }
 });
-test('unknown remote DSH version remains visible and a below-minimum Host is not probed', async t => {
+test('missing or invalid DSH metadata remains unknown and an older Host can be probed', async t => {
   const ctx = await context(t);
   ctx.dshRemoteClient.devices = async () => [
     { deviceId: 'unknown', online: true, clientVersion: '0.6.5' },
-    { deviceId: 'too-old', online: true, clientVersion: '0.6.5', harnessVersion: '0.2.2-rc.2' },
+    { deviceId: 'older', online: true, clientVersion: '0.6.5', harnessVersion: '0.2.2-rc.2' },
     { deviceId: 'invalid', online: true, clientVersion: '0.6.5', harnessVersion: 'not-semver' },
   ];
   const result = await selfCheck(ctx, {}, {}, new AbortController().signal);
-  assert.deepEqual(result.hosts.map(host => host.checks.find(row => row.id === 'dshVersion').state), ['unknown', 'fail', 'fail']);
-  const blocked = await selfCheck(ctx, { channels: { retain() { assert.fail('unsupported Host must not be probed'); } } }, { hostId: 'too-old' }, new AbortController().signal);
-  assert.equal(blocked.hosts[0].checks.find(row => row.id === 'connection').state, 'unknown');
+  assert.deepEqual(result.hosts.map(host => host.checks.find(row => row.id === 'dshVersion').state), ['unknown', 'pass', 'unknown']);
+  let acquired = 0;
+  const channels = { async retain(hostId) {
+    assert.equal(hostId, 'older'); acquired++;
+    return { query: (op, signal) => op({ client: { rpc: async () => ({ capabilities: ['harness.remote.v3'] }) } }, signal), release() {} };
+  } };
+  const checked = await selfCheck(ctx, { channels }, { hostId: 'older' }, new AbortController().signal);
+  assert.equal(acquired, 1);
+  assert.equal(checked.hosts[0].checks.find(row => row.id === 'connection').state, 'pass');
 });
 test('self-check reads only authorized metadata and releases its own channel', async t => {
   const ctx = await context(t); const calls = []; let releases = 0;

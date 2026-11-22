@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Remote Enhanced",
-    "description": "Show local and remote folders side by side in the native DSH workspace list, with the remote computer name appended. Open sessions directly and retain separate drafts without changing the global Remote target or reloading the page. This bundle requires DSH >=0.2.2-rc.3, including later prereleases. It also requires Remote 0.6.5, which declares its own DSH compatibility."
+    "description": "Show local and remote folders side by side in the native DSH workspace list, with the remote computer name appended. Open sessions directly and retain separate drafts without changing the global Remote target or reloading the page. This bundle does not declare a DSH version limit. It still requires native connection interfaces and Remote 0.6.5, which declares its own DSH compatibility."
   },
   "ui": {
     "offline": "Offline",

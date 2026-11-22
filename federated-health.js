@@ -6,18 +6,20 @@ import semver from 'semver';
 import { connectionIssue } from './federated-connection.js';
 
 const manifest = JSON.parse(readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'));
-const expectedDsh = manifest.engines.dsh, expectedRemote = manifest.peerDependencies['ds-harness-remote'];
+const expectedRemote = manifest.peerDependencies['ds-harness-remote'];
 const row = (id, state, facts = {}) => ({ id, state, ...facts });
 const exact = (actual, expected) => actual === expected;
-function version(id, actual, expected, matches = exact) {
-  return row(id, actual ? matches(actual, expected) ? 'pass' : 'fail' : 'unknown', {
+function version(id, actual, expected) {
+  return row(id, actual ? exact(actual, expected) ? 'pass' : 'fail' : 'unknown', {
     expected,
     ...(typeof actual === 'string' && /^[0-9][0-9A-Za-z.+-]{0,79}$/.test(actual) ? { actual } : {}),
   });
 }
-// Match DSH app-boot's nonempty, prerelease-inclusive engines.dsh check.
-const dshVersionCheck = actual => version('dshVersion', actual, expectedDsh,
-  (value, range) => typeof value === 'string' && range.trim() !== '' && semver.satisfies(value, range, { includePrerelease: true }));
+// Report DSH version metadata without making it a compatibility gate.
+function dshVersionCheck(value) {
+  const actual = typeof value === 'string' && value.length <= 80 && semver.valid(value) ? value : undefined;
+  return row('dshVersion', actual ? 'pass' : 'unknown', actual ? { actual } : {});
+}
 const stateOf = checks => checks.some(check => check.state === 'fail') ? 'fail' : checks.some(check => check.state !== 'pass') ? 'warn' : 'pass';
 
 export async function installationHealth(ctx) {
@@ -28,7 +30,7 @@ export async function installationHealth(ctx) {
       const require = createRequire(profile.installAnchor);
       const boot = await import(pathToFileURL(require.resolve('@deepseek-ai/dsh-app-boot')).href);
       dshVersion = boot.getDshRuntimeVersion();
-    } catch { /* Unknown is visible; the launcher also enforces engines.dsh. */ }
+    } catch { /* The missing version is reported as unknown. */ }
   }
   checks.push(dshVersionCheck(dshVersion));
   let remoteVersion;
@@ -45,7 +47,7 @@ export async function installationHealth(ctx) {
 }
 export async function assertInstallation(ctx) {
   const health = await installationHealth(ctx);
-  if (health.state === 'fail') throw Object.assign(new Error(`Remote Enhanced 需要 DSH ${expectedDsh}、Remote ${expectedRemote} 及原生 Harness 连接接口。请在插件管理器检查版本和启用状态后重试。`), { code: 'session-hosts/incompatible', details: { checks: health.checks } });
+  if (health.state === 'fail') throw Object.assign(new Error(`Remote Enhanced 需要 Remote ${expectedRemote} 及原生 Harness 连接接口。请在插件管理器检查版本和启用状态后重试。`), { code: 'session-hosts/incompatible', details: { checks: health.checks } });
   return health;
 }
 function childScope(value, hostId) {
