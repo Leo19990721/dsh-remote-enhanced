@@ -6,19 +6,12 @@ import semver from 'semver';
 import { connectionIssue } from './federated-connection.js';
 
 const manifest = JSON.parse(readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'));
-const expectedRemote = manifest.peerDependencies['ds-harness-remote'];
 const row = (id, state, facts = {}) => ({ id, state, ...facts });
-const exact = (actual, expected) => actual === expected;
-function version(id, actual, expected) {
-  return row(id, actual ? exact(actual, expected) ? 'pass' : 'fail' : 'unknown', {
-    expected,
-    ...(typeof actual === 'string' && /^[0-9][0-9A-Za-z.+-]{0,79}$/.test(actual) ? { actual } : {}),
-  });
-}
-// Report DSH version metadata without making it a compatibility gate.
-function dshVersionCheck(value) {
-  const actual = typeof value === 'string' && value.length <= 80 && semver.valid(value) ? value : undefined;
-  return row('dshVersion', actual ? 'pass' : 'unknown', actual ? { actual } : {});
+// Versions are diagnostic metadata. The required carrier interfaces determine compatibility.
+function versionMetadata(id, value) {
+  const present = typeof value === 'string' && value.trim().length > 0;
+  const safe = present && value.length <= 80 && (id === 'dshVersion' ? semver.valid(value) : /^[0-9A-Za-z][0-9A-Za-z.+_-]*$/.test(value));
+  return row(id, (id === 'dshVersion' ? safe : present) ? 'pass' : 'unknown', safe ? { actual: value } : {});
 }
 const stateOf = checks => checks.some(check => check.state === 'fail') ? 'fail' : checks.some(check => check.state !== 'pass') ? 'warn' : 'pass';
 
@@ -32,22 +25,22 @@ export async function installationHealth(ctx) {
       dshVersion = boot.getDshRuntimeVersion();
     } catch { /* The missing version is reported as unknown. */ }
   }
-  checks.push(dshVersionCheck(dshVersion));
+  checks.push(versionMetadata('dshVersion', dshVersion));
   let remoteVersion;
-  try {
-    const require = createRequire(join(profile?.dir || '', 'package.json'));
-    const remoteManifest = require.resolve('ds-harness-remote/package.json');
-    remoteVersion = require(remoteManifest).version;
-  } catch { /* Do not load Remote code to read its manifest. */ }
-  checks.push(version('remoteVersion', remoteVersion, expectedRemote));
-  if (!remoteVersion) checks[1].state = 'fail';
+  if (profile?.dir) {
+    try {
+      const require = createRequire(join(profile.dir, 'package.json'));
+      remoteVersion = require('ds-harness-remote/package.json').version;
+    } catch { /* Do not load Remote code to read its manifest. */ }
+  }
+  checks.push(versionMetadata('remoteVersion', remoteVersion));
   const runtime = ctx.dshRemoteClient;
   checks.push(row('carrier', ['withToolRemote', 'remoteTypertGateway'].every(key => typeof runtime?.[key] === 'function') && typeof runtime?.gatewaySwitch?.local === 'function' ? 'pass' : 'fail'));
   return { version: manifest.version, state: stateOf(checks), checks };
 }
 export async function assertInstallation(ctx) {
   const health = await installationHealth(ctx);
-  if (health.state === 'fail') throw Object.assign(new Error(`Remote Enhanced 需要 Remote ${expectedRemote} 及原生 Harness 连接接口。请在插件管理器检查版本和启用状态后重试。`), { code: 'session-hosts/incompatible', details: { checks: health.checks } });
+  if (health.state === 'fail') throw Object.assign(new Error('Remote Enhanced 需要原版 Remote 提供的原生 Harness 连接接口。请在插件管理器检查原版 Remote 是否已启用后重试。'), { code: 'session-hosts/incompatible', details: { checks: health.checks } });
   return health;
 }
 function childScope(value, hostId) {
@@ -76,12 +69,11 @@ export async function selfCheck(ctx, federation, args, signal) {
   const targets = hostId && hostId !== 'local' ? devices.filter(device => device.deviceId === hostId) : hostId === 'local' ? [] : devices;
   if (hostId && hostId !== 'local' && !targets.length) return { local, state: 'fail', discovery: { state: 'pass' }, hosts: [{ hostId, checks: [row('connection', 'fail', { issue: connectionIssue({ code: 'AUTHORIZATION_REQUIRED' }) })] }] };
   for (const device of targets) {
-    const checks = [dshVersionCheck(device.harnessVersion), version('remoteVersion', device.clientVersion, expectedRemote)];
+    const checks = [versionMetadata('dshVersion', device.harnessVersion), versionMetadata('remoteVersion', device.clientVersion)];
     const host = { hostId: device.deviceId, name: String(device.name || device.deviceId).replace(/[\x00-\x1f\x7f]/g, '').slice(0, 120), online: device.online === true, checks };
     hosts.push(host);
     if (!hostId) { checks.push(row('connection', 'unknown')); continue; }
     if (!host.online) { checks.push(row('connection', 'fail', { issue: connectionIssue({ code: 'HOST_OFFLINE' }) })); continue; }
-    if (checks.some(check => check.state === 'fail')) { checks.push(row('connection', 'unknown')); continue; }
     const active = AbortSignal.any([signal, AbortSignal.timeout(10000)]);
     let channel;
     try {

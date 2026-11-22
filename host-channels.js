@@ -31,8 +31,8 @@ export class HostChannels {
     }
   }
 
-  // Remote 0.6.5 permits one Control connection per identity. Its ordinary
-  // read tools must borrow this pool instead of replacing a live session link.
+  // Share the pool with Remote's ordinary read tools so we do not replace a
+  // live session link on carriers that allow one Control connection per identity.
   shareTools() {
     const runtime = this.runtime, original = runtime.withToolRemote, pool = this;
     async function shared(hostId, signal, query) {

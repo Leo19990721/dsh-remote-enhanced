@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-remote-enhanced",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "type": "module",
   "description": "Show remote folders beside local folders in the native DSH workspace list.",
@@ -40,11 +40,11 @@
     "release:pack": "pwsh -NoProfile -File scripts/pack.ps1"
   },
   "dependencies": {
-    "semver": "7.8.6",
-    "ws": "8.18.3"
+    "semver": ">=7.8.6",
+    "ws": ">=8.18.3"
   },
   "peerDependencies": {
-    "ds-harness-remote": "0.6.5"
+    "ds-harness-remote": "*"
   },
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },

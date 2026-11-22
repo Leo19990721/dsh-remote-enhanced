@@ -1,5 +1,3 @@
-import { createRequire } from 'node:module';
-import { join } from 'node:path';
 import { WebSocketServer } from 'ws';
 import { LoopbackPreview } from './federated-preview-transport.js';
 
@@ -11,25 +9,17 @@ export function remoteProfileDirectory(ctx, config = {}) {
   return directory;
 }
 
-export async function loadLoopbackPreview(profileDirectory, options) {
-  const resolve = createRequire(join(profileDirectory, 'package.json'));
-  const manifestPath = resolve.resolve('ds-harness-remote/package.json');
-  if (resolve(manifestPath).version !== '0.6.5') throw new Error('Remote preview requires verified Remote 0.6.5.');
-  return (client, previewOptions) => new LoopbackPreview(client, loadWebSocketServer(profileDirectory), { ...options, ...previewOptions });
+export function loadLoopbackPreview(options) {
+  return (client, previewOptions) => new LoopbackPreview(client, loadWebSocketServer(), { ...options, ...previewOptions });
 }
 
 export function loadWebSocketServer() {
   return WebSocketServer;
 }
 
-// Version-scoped adapter reuses Remote's own encrypted carrier and protocol.
+// Reuse Remote's own encrypted carrier and protocol.
 // No credentials, alternate transport, or installed files are changed.
-export async function createRemoteReader(profileDirectory, channels) {
-  if (!profileDirectory) throw new Error('Remote profile directory unavailable.');
-  const resolve = createRequire(join(profileDirectory, 'package.json'));
-  const manifestPath = resolve.resolve('ds-harness-remote/package.json');
-  const manifest = resolve(manifestPath);
-  if (manifest.version !== '0.6.5') throw new Error('Unified sessions requires the verified Remote 0.6.5 adapter.');
+export function createRemoteReader(channels) {
   return async (client, hostId, signal) => {
     if (typeof client.withToolRemote !== 'function' || typeof client.remoteTypertGateway !== 'function') throw new Error('Remote read-only carrier unavailable.');
     if (channels) {

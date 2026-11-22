@@ -2,8 +2,8 @@ import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-// Only a package manifest is needed by the version-scoped adapter. No real
-// Remote package, credentials, profile settings or profile-hoisted ws is used.
+// The package manifest supplies self-check metadata. No real Remote package,
+// credentials, profile settings or profile-hoisted ws is used.
 export async function remoteProfile(t, { version = '0.6.5' } = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'dsh-remote-enhanced-test-'));
   t.after(() => rm(directory, { recursive: true, force: true }));

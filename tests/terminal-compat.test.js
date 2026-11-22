@@ -1,8 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { openHostStream } from '../federated-terminal.js';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { loadTerminalAdapter, openHostStream } from '../federated-terminal.js';
+import { remoteProfile } from './helpers/remote-profile.js';
 import { StreamInput } from '../federated-input.js';
 import { FederatedGateway } from '../federated-gateway.js';
+
+test('terminal loader accepts Remote 0.6.7 but requires the actual adapter export', async t => {
+  const makeAdapter = async source => {
+    const dir = await remoteProfile(t, { version: '0.6.7' });
+    const dist = join(dir, 'node_modules', 'ds-harness-remote', 'dist');
+    await mkdir(dist);
+    await writeFile(join(dist, 'terminal-carrier-compat.js'), source);
+    return dir;
+  };
+  const supported = await makeAdapter('module.exports.openRemoteTerminal = () => "fixture";');
+  assert.equal((await loadTerminalAdapter(supported))(), 'fixture');
+  const unsupported = await makeAdapter('module.exports.openRemoteTerminal = null;');
+  await assert.rejects(loadTerminalAdapter(unsupported), /Remote terminal adapter unavailable/);
+});
 
 test('remote terminal attach uses Remote compatibility with the exact carrier and input, never the global selector', async () => {
   const target = { open() { throw new Error('native attach is not directly allowed'); } }, signal = new AbortController().signal, uplink = new StreamInput();

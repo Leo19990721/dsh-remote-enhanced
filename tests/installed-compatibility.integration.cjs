@@ -26,7 +26,7 @@ const manifest = require('../package.json');
   try {
     const remote = join(dir, 'node_modules', 'ds-harness-remote');
     await mkdir(remote, { recursive: true });
-    await writeFile(join(remote, 'package.json'), JSON.stringify({ name: 'ds-harness-remote', version: '0.6.5' }));
+    await writeFile(join(remote, 'package.json'), JSON.stringify({ name: 'ds-harness-remote', version: '0.6.7' }));
     const { assertInstallation, selfCheck } = await import('../federated-health.js');
     let peerVersion = installed;
     const ctx = {
@@ -40,11 +40,17 @@ const manifest = require('../package.json');
     assert.deepEqual(health.checks.find(row => row.id === 'dshVersion'), {
       id: 'dshVersion', state: 'pass', actual: installed,
     });
+    assert.deepEqual(health.checks.find(row => row.id === 'remoteVersion'), {
+      id: 'remoteVersion', state: 'pass', actual: '0.6.7',
+    });
     for (const version of comparisons) {
       assert.equal(boot.evaluatePluginCompatibility(manifest, {}, version), undefined, version);
       peerVersion = version;
       const result = await selfCheck(ctx, {}, {}, new AbortController().signal);
       assert.deepEqual(result.local, health);
+      assert.deepEqual(result.hosts[0].checks.find(row => row.id === 'remoteVersion'), {
+        id: 'remoteVersion', state: 'pass', actual: '0.6.5',
+      });
       assert.deepEqual(result.hosts[0].checks.find(row => row.id === 'dshVersion'), {
         id: 'dshVersion', state: 'pass', actual: version,
       });

@@ -8,7 +8,6 @@ import { setTimeout as delay } from 'node:timers/promises';
 export async function loadTerminalAdapter(profileDirectory) {
   const require = createRequire(join(profileDirectory, 'package.json'));
   const manifest = require.resolve('ds-harness-remote/package.json');
-  if (require(manifest).version !== '0.6.5') throw new Error('Terminal compatibility requires Remote 0.6.5.');
   const { openRemoteTerminal } = await import(pathToFileURL(join(dirname(manifest), 'dist/terminal-carrier-compat.js')).href);
   if (typeof openRemoteTerminal !== 'function') throw new Error('Remote terminal adapter unavailable.');
   return openRemoteTerminal;

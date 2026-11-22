@@ -3,7 +3,7 @@ import { currentTarget } from './catalog.js';
 import { remoteProfileDirectory } from './remote-adapter.js';
 import { loadTerminalAdapter } from './federated-terminal.js';
 
-// Remote 0.6.5 owns the original local dispatcher. Calling that dispatcher
+// Remote owns the original local dispatcher. Calling that dispatcher
 // preserves the actual admitted Peer and bypasses only its global Host switch.
 export function createFederatedRuntime(ctx) {
   const runtime = ctx.dshRemoteClient;

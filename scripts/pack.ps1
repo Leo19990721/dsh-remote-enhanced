@@ -78,8 +78,8 @@ assert.equal(manifest.private, true);
 assert.equal(manifest.license, 'MIT');
 assert.equal(Object.hasOwn(manifest.engines, 'dsh'), false);
 assert.equal(manifest.engines.node, '>=24');
-assert.deepEqual(manifest.dependencies, { semver: '7.8.6', ws: '8.18.3' });
-assert.equal(manifest.peerDependencies['ds-harness-remote'], '0.6.5');
+assert.deepEqual(manifest.dependencies, { semver: '>=7.8.6', ws: '>=8.18.3' });
+assert.equal(manifest.peerDependencies['ds-harness-remote'], '*');
 const allowed = /^(?:(?:native-host|native-client|catalog|owner-route|remote-adapter|host-channels|rpc-binary|federated-[a-z-]+)\.js|package\.json|cordis\.patch\.yml|locale\/[a-z-]+\.json|icon\.svg|LICENSE|REMOTE-LICENSE\.txt|README\.md)$/;
 for (const filename of files.keys()) assert.match(filename, allowed, 'Unexpected packed file: ' + filename);
 for (const filename of ['native-host.js', 'native-client.js', 'remote-adapter.js', 'cordis.patch.yml', 'locale/en.json', 'locale/zh.json', 'icon.svg', 'LICENSE', 'REMOTE-LICENSE.txt', 'README.md']) assert.ok(files.has(filename), 'Missing packed file: ' + filename);
@@ -94,7 +94,8 @@ for (const [filename, source] of files) {
       const target = path.posix.normalize(path.posix.join(path.posix.dirname(filename), specifier));
       assert.ok(files.has(target), `${filename} imports missing runtime file ${target}`);
     } else if (filename !== 'native-client.js' && !specifier.startsWith('node:')) {
-      assert.ok(manifest.dependencies[specifier] || manifest.peerDependencies[specifier], 'Undeclared runtime dependency: ' + specifier);
+      const dependency = specifier.split('/').slice(0, specifier.startsWith('@') ? 2 : 1).join('/');
+      assert.ok(Object.hasOwn(manifest.dependencies, dependency) || Object.hasOwn(manifest.peerDependencies, dependency), 'Undeclared runtime dependency: ' + specifier);
     }
   }
 }

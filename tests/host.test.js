@@ -7,15 +7,16 @@ import { createRemoteReader } from '../remote-adapter.js';
 import { WebSocketServer } from 'ws';
 import { remoteProfile } from './helpers/remote-profile.js';
 
-test('host RPC rejects non-owner and shares read operations with the tool', async t => {
-  const profileDirectory = await remoteProfile(t);
-  let route, tool; const routes = [];
+test('Remote 0.6.7 mounts the Session attach endpoint and keeps workspace RPC owner-only', async t => {
+  const profileDirectory = await remoteProfile(t, { version: '0.6.7' });
+  let tool; const routes = new Map();
   const disposers = [];
+  t.after(async () => { for (const disposer of disposers.reverse()) await disposer(); });
   const ctx = {
     root: { baseDir: profileDirectory },
     effect: factory => { const disposer = factory(); if (typeof disposer === 'function') disposers.push(disposer); else if (disposer?.[Symbol.iterator]) for (const item of disposer) if (typeof item === 'function') disposers.push(item); return () => {}; },
     connection: { admit: request => request.admission },
-    webServer: { register: value => { routes.push(value); if (value.path === '/dsh-remote-workspaces') route = value; return () => {}; }, registerUpgrade: () => () => {} },
+    webServer: { register: value => { routes.set(value.path, value); return () => {}; }, registerUpgrade: () => () => {} },
     tools: { register: value => { tool = value; return () => {}; } },
     dshRemoteClient: { status: () => ({ mode: 'local' }), gatewaySwitch: { local() {} }, withToolRemote() {}, remoteTypertGateway() {} },
     typert: { remotes: { get() {} }, local: { get() {} } },
@@ -25,13 +26,23 @@ test('host RPC rejects non-owner and shares read operations with the tool', asyn
   const signal = new AbortController().signal;
   const { Readable } = await import('node:stream');
   const { EventEmitter } = await import('node:events');
-  async function request(kind, action = 'status') {
+  async function request(kind, action = 'status', path = '/dsh-remote-workspaces') {
     const req = Readable.from([JSON.stringify({ type: 'client-request', rpcId: 'test', method: action, payload: {} })]);
-    Object.assign(req, { url: '/dsh-remote-workspaces/' + action, method: 'POST', headers: { 'content-type': 'application/json' }, admission: { peer: { principal: { kind } } } });
-    const res = Object.assign(new EventEmitter(), { writeHead(code) { this.code = code; }, end(body) { this.body = body; this.writableEnded = true; } });
-    await route.handler(req, res);
+    Object.assign(req, { url: `${path}/${action}`, method: 'POST', headers: { 'content-type': 'application/json' }, admission: { peer: { principal: { kind }, signal } } });
+    const res = Object.assign(new EventEmitter(), {
+      body: '', writeHead(code) { this.code = code; }, write(chunk) { this.body += Buffer.from(chunk).toString('utf8'); return true; },
+      end(body) { if (body) this.write(body); this.writableEnded = true; },
+    });
+    await routes.get(path).handler(req, res);
     return res;
   }
+  assert.equal(routes.get('/dsh-session-hosts')?.kind, 'prefix');
+  const attached = await request('owner', 'attach', '/dsh-session-hosts');
+  assert.equal(attached.code, 200);
+  const attachResult = JSON.parse(attached.body).result;
+  assert.equal(attachResult.ok, true);
+  assert.equal(attachResult.value.baseHost, 'local');
+  assert.match(attachResult.value.viewId, /^[\da-f-]{36}$/);
   const denied = await request('member');
   assert.equal(denied.code, 403);
   const allowed = JSON.parse((await request('owner')).body).result;
@@ -42,7 +53,6 @@ test('host RPC rejects non-owner and shares read operations with the tool', asyn
   assert.equal(checked.code, 200);
   assert.deepEqual(JSON.parse(checked.body).result.value, await tool.execute({ action: 'selfCheck' }, { signal }));
   assert.equal((await request('member', 'selfCheck')).code, 403);
-  for (const disposer of disposers.reverse()) await disposer();
 });
 test('profile location follows the operating computer instead of a copied old path', async () => {
   for (const dir of ['C:/Users/another-user/.dsh/profiles/desktop', 'D:/Harness Data/profiles/work']) {
@@ -54,27 +64,28 @@ test('profile location follows the operating computer instead of a copied old pa
   assert.doesNotMatch(patch, /profileDirectory|C:\/|Users|Leo/);
   assert.match(patch, /filePreviewTargets:\s*\[\]/);
 });
-test('adapter uses its declared WebSocket dependency without loading a profile runtime', async t => {
-  const profileDirectory = await remoteProfile(t);
-  assert.equal(adapter.loadWebSocketServer(profileDirectory), WebSocketServer);
+test('preview uses its declared WebSocket dependency without needing a Remote manifest', async () => {
   assert.equal(adapter.loadWebSocketServer(), WebSocketServer);
-  const createPreview = await adapter.loadLoopbackPreview(profileDirectory);
+  const createPreview = adapter.loadLoopbackPreview();
   const preview = createPreview({});
   await preview.close();
   const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(manifest.version, '0.1.6');
-  assert.deepEqual(manifest.dependencies, { semver: '7.8.6', ws: '8.18.3' });
-  assert.equal(manifest.peerDependencies['ds-harness-remote'], '0.6.5');
+  assert.equal(manifest.version, '0.1.7');
+  assert.deepEqual(manifest.dependencies, { semver: '>=7.8.6', ws: '>=8.18.3' });
+  assert.equal(manifest.peerDependencies['ds-harness-remote'], '*');
   assert.equal(Object.hasOwn(manifest.engines, 'dsh'), false);
   assert.equal(manifest.engines.node, '>=24');
 });
-test('adapter rejects an unverified Remote manifest before using a carrier', async t => {
-  const profileDirectory = await remoteProfile(t, { version: '0.6.4' });
-  await assert.rejects(createRemoteReader(profileDirectory), /verified Remote 0\.6\.5/);
-  await assert.rejects(adapter.loadLoopbackPreview(profileDirectory), /verified Remote 0\.6\.5/);
+test('catalog adapter rejects missing carrier interfaces and unsupported Hosts', async () => {
+  const reader = createRemoteReader(), signal = new AbortController().signal;
+  await assert.rejects(reader({}, 'remote', signal), /Remote read-only carrier unavailable/);
+  await assert.rejects(reader({
+    withToolRemote: async (_hostId, active, query) => query({ features: { remoteGateway: false } }, active),
+    remoteTypertGateway: () => assert.fail('Must not open an unsupported gateway'),
+  }, 'remote', signal), /Harness sessions unavailable/);
 });
-test('adapter reads metadata through Remote carrier and closes only its own follow stream', async t => {
-  const reader = await createRemoteReader(await remoteProfile(t));
+test('adapter reads metadata through Remote carrier and closes only its own follow stream', async () => {
+  const reader = createRemoteReader();
   const operations = [];
   const client = {
     withToolRemote: async (hostId, signal, query) => {

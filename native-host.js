@@ -1,5 +1,5 @@
 import { UnifiedCatalog, CatalogError } from './catalog.js';
-import { createRemoteReader, loadWebSocketServer, loadLoopbackPreview, remoteProfileDirectory } from './remote-adapter.js';
+import { createRemoteReader, loadWebSocketServer, loadLoopbackPreview } from './remote-adapter.js';
 import { registerOwnerRoute } from './owner-route.js';
 import { createFederatedRuntime } from './federated-runtime.js';
 import { registerFederatedRoute } from './federated-route.js';
@@ -11,15 +11,14 @@ export const RPC_CHANNEL = '/dsh-remote-workspaces';
 export async function apply(ctx, config = {}) {
   const installation = await assertInstallation(ctx);
   registerChildControl(ctx);
-  const profileDirectory = remoteProfileDirectory(ctx, config);
   const federation = createFederatedRuntime(ctx);
   ctx.effect(() => () => federation.dispose(), 'remote-workspaces: independent Host connections');
-  const readRemote = await createRemoteReader(profileDirectory, federation.channels);
+  const readRemote = createRemoteReader(federation.channels);
   const previewFailures = [];
-  const resources = { ...federation, createPreview: await loadLoopbackPreview(profileDirectory, { onFailure: value => {
+  const resources = { ...federation, createPreview: loadLoopbackPreview({ onFailure: value => {
     previewFailures.push({ at: Date.now(), ...value }); if (previewFailures.length > 8) previewFailures.shift();
   } }) };
-  const views = registerFederatedRoute(ctx, { ...resources, filePreviewTargets: config.filePreviewTargets, WebSocketServer: loadWebSocketServer(profileDirectory) });
+  const views = registerFederatedRoute(ctx, { ...resources, filePreviewTargets: config.filePreviewTargets, WebSocketServer: loadWebSocketServer() });
   const catalog = new UnifiedCatalog(ctx, { readRemote });
   const lifetime = new AbortController();
   ctx.effect(() => () => lifetime.abort(), 'remote-workspaces: lifetime');

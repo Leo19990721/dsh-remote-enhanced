@@ -1,10 +1,10 @@
-// Installed, version-scoped Remote adapter on synthetic terminals only.
+// Installed Remote adapter in a separate fixture, on synthetic terminals only.
 const assert = require('node:assert/strict');
-const path = require('node:path');
 (async () => {
   const { loadTerminalAdapter, openHostStream } = await import('../federated-terminal.js');
   const { StreamInput } = await import('../federated-input.js');
-  const attach = await loadTerminalAdapter(process.env.DSH_PROFILE_DIR);
+  assert.ok(process.env.DSH_REMOTE_FIXTURE_DIR, 'DSH_REMOTE_FIXTURE_DIR must point to an isolated fixture containing ds-harness-remote');
+  const attach = await loadTerminalAdapter(process.env.DSH_REMOTE_FIXTURE_DIR);
   const stop = new AbortController(), input = new StreamInput(), writes = [];
   let followed;
   const target = {
