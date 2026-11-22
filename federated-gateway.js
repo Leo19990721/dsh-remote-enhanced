@@ -168,7 +168,8 @@ export class FederatedGateway {
         for (const key of ['archivedSessionIds', 'pinnedSessionIds', 'workspaceIds']) {
           if (!Array.isArray(value[key])) continue;
           const others = [...this.workspaceStates].filter(([id]) => id !== target.hostId).flatMap(([, state]) => key === 'workspaceIds' ? state.items.map(row => row.workspaceId) : state[key]);
-          value = { ...value, [key]: [...others, ...value[key]] };
+          const merged = target.hostId === this.baseHost ? [...value[key], ...others] : [...others, ...value[key]];
+          value = { ...value, [key]: merged };
         }
       }
       return { ...result, value };

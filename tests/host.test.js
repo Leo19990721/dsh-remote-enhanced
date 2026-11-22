@@ -70,7 +70,7 @@ test('preview uses its declared WebSocket dependency without needing a Remote ma
   const preview = createPreview({});
   await preview.close();
   const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(manifest.version, '0.1.7');
+  assert.equal(manifest.version, '0.1.8');
   assert.deepEqual(manifest.dependencies, { semver: '>=7.8.6', ws: '>=8.18.3' });
   assert.equal(manifest.peerDependencies['ds-harness-remote'], '*');
   assert.equal(Object.hasOwn(manifest.engines, 'dsh'), false);

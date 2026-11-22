@@ -75,7 +75,13 @@ function reduceState(endpoint, previous, frame) {
   if (frame.type === 'baseline' || frame.type === 'replace') return frame.value;
   if (endpoint !== 'workspace/follow') return previous;
   switch (frame.type) {
-    case 'upsert': return { ...previous, items: [...previous.items.filter(row => row.workspaceId !== frame.workspace.workspaceId), frame.workspace] };
+    case 'upsert': {
+      const index = previous.items.findIndex(row => row.workspaceId === frame.workspace.workspaceId);
+      const items = index >= 0
+        ? previous.items.with(index, frame.workspace)
+        : [...previous.items, frame.workspace];
+      return { ...previous, items };
+    }
     case 'remove': return { ...previous, items: previous.items.filter(row => row.workspaceId !== frame.workspaceId) };
     case 'order': {
       // Match the native model: order is a rank update, never a deletion.
