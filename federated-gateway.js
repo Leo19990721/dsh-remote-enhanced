@@ -127,7 +127,7 @@ export class FederatedGateway {
     try { return { hostId, name: this.hostNames.get(hostId), ...await this.channels.retain(hostId, signal) }; }
     catch (error) { signal.throwIfAborted(); throw hostConnectionError(error, hostId, this.hostNames.get(hostId), true); }
   }
-  async call(endpoint, payload, signal = EMPTY(), peer) {
+  async call(endpoint, payload, signal = EMPTY(), peer, dispatchLocal) {
     this.owner(peer); signal.throwIfAborted();
     if (endpoint === '$events/result') return this.events.answer(payload, signal, peer);
     if (endpoint === 'session/list') return this.list(payload, signal, peer);
@@ -158,7 +158,9 @@ export class FederatedGateway {
         ? await readRemoteFile(channel, target.payload.args, signal)
         : target.hostId !== 'local' && endpoint === 'officeKit/render'
           ? await renderRemoteOffice(channel, target.payload.args, signal, this.officeKit)
-          : await channel.call(endpoint, target.payload, signal);
+          : await (target.hostId === 'local' && dispatchLocal
+            ? dispatchLocal(endpoint, () => channel.call(endpoint, target.payload, signal))
+            : channel.call(endpoint, target.payload, signal));
       if (!result.ok) {
         const error = hostConnectionError(result.error, target.hostId, this.hostNames.get(target.hostId));
         return error === result.error ? result : { ok: false, error: { code: error.code, message: error.message, details: error.details } };

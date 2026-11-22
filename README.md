@@ -2,7 +2,7 @@
 
 在 DSH 原生工作区列表中并列显示本机和已授权远端电脑的文件夹。打开会话后，请求始终交给会话所属的 Host（运行该会话的电脑），保留各自的草稿和运行状态。切换会话沿用原生界面，不切换 Remote 全局目标、不整页刷新。
 
-当前版本为 **0.1.7**，包名为 `@local/dsh-remote-enhanced`，`private: true`。增强包不声明 `engines.dsh`，对 `ds-harness-remote` 的 peer 要求为 `*`。自检只报告 DSH 和 Remote 的版本号，不按版本拦截；实际仍需启用原版 Remote，并具备所用功能要求的原生连接接口。原版 Remote 自身的兼容声明不变。升级 DSH 或 Remote 后，请先在自己的设备组合上验证。开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。
+当前版本为 **0.1.9**，包名为 `@local/dsh-remote-enhanced`，`private: true`。增强包不声明 `engines.dsh`，对 `ds-harness-remote` 的 peer 要求为 `*`。自检只报告 DSH 和 Remote 的版本号，不按版本拦截；实际仍需启用原版 Remote，并具备所用功能要求的原生连接接口。原版 Remote 自身的兼容声明不变。升级 DSH 或 Remote 后，请先在自己的设备组合上验证。开发和测试使用 **Node.js 24 及以上、pnpm 11.28.5**。
 
 ## 安装
 

@@ -11,9 +11,17 @@ import { carrierRegistry } from './carrier-fixture.js';
 test('authenticated HTTP route drives native carrier calls and streams end to end', { timeout: 5000 }, async () => {
   let route; const disposers = [];
   const peer = { principal: { kind: 'owner' }, signal: new AbortController().signal };
-  const calls = [];
+  const calls = [], localCalls = [];
   const ctx = {
     connection: { admit: request => request.headers['x-test-owner'] === 'owner' ? { peer } : { rejection: 401 } },
+    waterfall(event, input, next) {
+      assert.equal(event, 'session-hosts/local-call');
+      assert.equal(input.peer, peer);
+      assert.equal(input.request.method, 'POST');
+      assert.equal(input.signal.aborted, false);
+      localCalls.push(input.endpoint);
+      return next();
+    },
     webServer: { register(value) { route = value; return () => {}; } },
     effect(factory) {
       const value = factory();
@@ -56,6 +64,10 @@ test('authenticated HTTP route drives native carrier calls and streams end to en
     const id = 'dsh-peer:' + JSON.stringify(['remote', 'session', 's']);
     const result = await client.connection.rpc.call('/api', 'session/rename', { args: { request: { sessionId: id } } });
     assert.equal(result.ok, true); assert.equal(calls[0][0], 'remote'); assert.equal(calls[0][2].args.request.sessionId, 's');
+    assert.deepEqual(localCalls, [], 'remote calls never carry a local submission witness');
+    const localPayload = { args: { request: { sessionId: 's' } } };
+    assert.equal((await client.connection.rpc.call('/api', 'session/rename', localPayload)).ok, true);
+    assert.deepEqual(localCalls, ['session/rename']);
     const values = [];
     for await (const value of client.connection.rpc.open('/api', 'session/follow', { args: { request: { sessionId: id } } }, peer.signal)) values.push(value);
     assert.equal(values[0].header.id, id);

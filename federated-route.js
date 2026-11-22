@@ -90,7 +90,12 @@ export function registerFederatedRoute(ctx, options) {
         else {
           if (typeof args.endpoint !== 'string' || !/^(\$events(?:\/result)?|\$hostStatus|\$previewFiles|[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_$.-]+)$/.test(args.endpoint)) throw new Error('ENDPOINT_REQUIRED');
           const active = AbortSignal.any([signal, view.stop.signal]);
-          if (endpoint === 'call') result = projectBinary(await view.gateway.call(args.endpoint, args.payload, active, peer), options.descriptor(args.endpoint));
+          if (endpoint === 'call') {
+            // Preserve the authenticated desktop submission only around dispatch to this Host.
+            const dispatchLocal = (endpoint, next) => ctx.waterfall('session-hosts/local-call',
+              { request, peer, endpoint, signal: active }, next);
+            result = projectBinary(await view.gateway.call(args.endpoint, args.payload, active, peer, dispatchLocal), options.descriptor(args.endpoint));
+          }
           else {
             if (options.descriptor(args.endpoint)?.uplink) throw new Error('DUPLEX_STREAM_UNAVAILABLE');
             response.writeHead(200, { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
