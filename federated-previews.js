@@ -29,7 +29,7 @@ export class SessionPreviews {
     if (!parsed) throw new Error('只有远端 localhost 网页需要转发。');
     if (typeof fileMode !== 'boolean') throw new Error('网页文件预览模式无效。');
     const filePreviewAvailable = this.filePreviewTargets.some(item => item.hostId === target.hostId && item.port === parsed.port && item.path === parsed.url.pathname);
-    if (fileMode && !filePreviewAvailable) throw new Error('此网页未配置整理地图文件预览。');
+    if (fileMode && !filePreviewAvailable) throw new Error('此网页未配置远端文件预览。');
     // Each tab owns its origin even in ordinary mode. Revoking that occurrence
     // must also revoke its old transparent /open URL in native browser history;
     // no sibling tab may keep that URL alive after file mode is enabled.

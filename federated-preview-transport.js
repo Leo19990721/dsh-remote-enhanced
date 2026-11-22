@@ -135,7 +135,7 @@ export class LoopbackPreview {
             res.end(JSON.stringify({ error }));
         };
         if (req.url !== '/open' || req.method !== 'POST' || req.headers.origin !== `http://${authority}` || req.headers['content-type'] !== 'application/json') {
-            req.resume(); reply(403, '请从 DSH 中的整理地图选择文件。'); return;
+            req.resume(); reply(403, '请从 DSH 中的远端网页选择文件。'); return;
         }
         try {
             const chunks = []; let bytes = 0;
