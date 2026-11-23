@@ -2,7 +2,7 @@ window.__ModuleLoader__.load({
   id: '@local/dsh-remote-enhanced',
   factory(require) {
     const React = require('react');
-    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","fileMenu":"文件操作","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"网页文件预览","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击网页中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","connectionRateLimited":"请求太多，请等一会儿再试。","connectionServiceUnavailable":"远程服务暂时不可用，请稍后再试。","connectionHostOffline":"电脑不在线。请在那台电脑打开 DSH，再试一次。","connectionConnectionTimeout":"连接超时。请确认那台电脑已联网并打开 DSH，再试一次。","connectionAuthorizationRequired":"请打开远程工作台，检查登录和设备授权。","connectionConnectionInterrupted":"远程连接断开了。请在远程工作台查看连接状态。","connectionConnectionFailed":"暂时连不上。请确认那台电脑已联网并打开 DSH。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","fileMenu":"File actions","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","connectionRateLimited":"Too many requests. Wait a moment, then try again.","connectionServiceUnavailable":"Remote is temporarily unavailable. Try again later.","connectionHostOffline":"This computer is offline. Open DSH on it, then try again.","connectionConnectionTimeout":"Connection timed out. Check that the other computer is online and DSH is open, then try again.","connectionAuthorizationRequired":"Open Remote Workbench to check sign-in and device access.","connectionConnectionInterrupted":"The connection dropped. Check its status in Remote Workbench.","connectionConnectionFailed":"Could not connect. Check that the other computer is online and DSH is open."}};
+    const dictionaries = {"zh":{"offline":"离线","unavailable":"暂不可用","loadFailed":"远程工作区加载失败，点击重试。","partialFailed":"部分远程工作区加载失败，点击重试。","connecting":"正在连接对应电脑…","hostOffline":"这台电脑已离线，连接恢复后再打开。","openFailed":"会话打开失败，请检查 Remote 连接后重试。","sessionUnavailable":"这个会话暂不可用，请刷新工作区后重试。","independentRoutingRequired":"全局切换入口已停用，请直接点击对应工作区中的会话。","fileUnavailable":"远端文件不可用，请检查电脑连接、文件路径和读取权限。","imageOpen":"查看远端图片","close":"关闭","download":"下载到本机","fileMenu":"文件操作","retry":"刷新","parentDirectory":"上一级文件夹","directory":"远端文件夹","directoryTruncated":"文件夹内容较多，当前列表已达到显示上限。","openSidebar":"在侧栏打开","copyRemotePath":"复制远端路径","copyLink":"复制链接","remoteApplication":"远端文件请先预览或下载到本机。","previewSourceComputer":"网页所属电脑","previewPortDenied":"{computer} 尚未允许网页端口 {port}。请在那台电脑已登录的 DSH Remote 设置中允许此端口并保存，然后回到这里刷新网页。","previewServiceUnavailable":"{computer} 的网页服务未响应端口 {port}。请在那台电脑启动对应网页服务，然后回到这里刷新。","mapFiles":"整理地图文件","mapFilesEnable":"开启本机预览","mapFilesDisable":"关闭本机预览","mapFilesHint":"点击地图中的文件后，在此选择预览或下载。开关会重新载入当前网页。","mapFilesOffHint":"先开启本机预览。当前网页原操作会在远端电脑执行；切换将重载此页。","mapFilesResume":"重新载入本机预览","mapFilesCurrentSession":"当前会话","mapFilesConfirm":"确认打开远端资源","mapFilesSource":"来源：","mapFilesPreview":"预览","mapFilesFolder":"查看文件夹","cancel":"取消","connectionRateLimited":"请求太多，请等一会儿再试。","connectionServiceUnavailable":"远程服务暂时不可用，请稍后再试。","connectionHostOffline":"电脑不在线。请在那台电脑打开 DSH，再试一次。","connectionConnectionTimeout":"连接超时。请确认那台电脑已联网并打开 DSH，再试一次。","connectionAuthorizationRequired":"请打开远程工作台，检查登录和设备授权。","connectionConnectionInterrupted":"远程连接断开了。请在远程工作台查看连接状态。","connectionConnectionFailed":"暂时连不上。请确认那台电脑已联网并打开 DSH。"},"en":{"offline":"Offline","unavailable":"Unavailable","loadFailed":"Could not load remote workspaces. Click to retry.","partialFailed":"Some remote workspaces could not load. Click to retry.","connecting":"Connecting to the selected computer…","hostOffline":"This computer is offline. Open it after it reconnects.","openFailed":"Could not open the session. Check the Remote connection and retry.","sessionUnavailable":"This session is unavailable. Refresh the workspaces and retry.","independentRoutingRequired":"Global-target selection has been retired. Open the session directly from its workspace.","fileUnavailable":"Remote file unavailable. Check the computer connection, path and read permissions.","imageOpen":"View remote image","close":"Close","download":"Download to this computer","fileMenu":"File actions","retry":"Refresh","parentDirectory":"Parent folder","directory":"Remote folder","directoryTruncated":"This folder reached the display limit.","openSidebar":"Open in sidebar","copyRemotePath":"Copy remote path","copyLink":"Copy link","remoteApplication":"Preview remote files or download them to this computer first.","previewSourceComputer":"The page's computer","previewPortDenied":"{computer} has not allowed webpage port {port}. Allow this port in the signed-in DSH Remote settings on that computer, save, then refresh this page here.","previewServiceUnavailable":"The webpage service on {computer} did not respond on port {port}. Start that service on that computer, then refresh this page here.","mapFiles":"Map files","mapFilesEnable":"Enable local preview","mapFilesDisable":"Disable local preview","mapFilesHint":"Click a map file, then preview or download it here. Toggling reloads this page.","mapFilesOffHint":"Enable local preview first. Original page actions run on the remote computer; toggling reloads this page.","mapFilesResume":"Reload local preview","mapFilesCurrentSession":"Current session","mapFilesConfirm":"Confirm remote resource","mapFilesSource":"Source:","mapFilesPreview":"Preview","mapFilesFolder":"View folder","cancel":"Cancel","connectionRateLimited":"Too many requests. Wait a moment, then try again.","connectionServiceUnavailable":"Remote is temporarily unavailable. Try again later.","connectionHostOffline":"This computer is offline. Open DSH on it, then try again.","connectionConnectionTimeout":"Connection timed out. Check that the other computer is online and DSH is open, then try again.","connectionAuthorizationRequired":"Open Remote Workbench to check sign-in and device access.","connectionConnectionInterrupted":"The connection dropped. Check its status in Remote Workbench.","connectionConnectionFailed":"Could not connect. Check that the other computer is online and DSH is open."}};
     // One authenticated socket carries every independently cancellable logical
 // stream. Separate long-lived HTTP fetches would exhaust Chromium's per-origin
 // connection pool and block ordinary Session commands.
@@ -430,6 +430,397 @@ function installSessionResidency(sessions, { maxSessions = 12 } = {}) {
     const references = [...held.values()]; held.clear();
     for (const reference of references) reference.release();
   };
+}
+
+    const SESSION_ORDER_MIGRATED_KEY = 'dsh.remote-enhanced.session-order-migrated.v1';
+const REMOTE_WORKSPACE_PREFIX = 'dsh-peer:';
+
+function isRemoteWorkspaceId(workspaceId) {
+  return typeof workspaceId === 'string' && workspaceId.startsWith(REMOTE_WORKSPACE_PREFIX);
+}
+
+function arraysEqual(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+  for (let i = 0; i < left.length; i++) if (left[i] !== right[i]) return false;
+  return true;
+}
+
+function orderByRecency(sessionIds, summaries) {
+  return sessionIds
+    .flatMap(id => {
+      const summary = summaries?.[id];
+      if (summary === undefined) return [];
+      return [{ id, rank: typeof summary.updatedAt === 'number' ? summary.updatedAt : 0 }];
+    })
+    .sort((a, b) => (a.rank !== b.rank ? b.rank - a.rank : a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+    .map(member => member.id);
+}
+
+// Mirrors native reconcileManualOrder + sectionMembers (pinned -> unpinned -> archived)
+// restricted to accounted workspace session IDs for lossless one-time local migration.
+function reconcileDisplayOrder(memberIds, savedOrder, summaries = {}, rowState = {}) {
+  const members = new Set(memberIds || []);
+  const included = new Set();
+  const ordered = [];
+  for (const key of savedOrder || []) {
+    if (!members.has(key) || included.has(key)) continue;
+    ordered.push(key);
+    included.add(key);
+  }
+  const archived = new Set(rowState?.archivedSessionIds || []);
+  const pinned = new Set(rowState?.pinnedSessionIds || []);
+  const pins = [];
+  for (const id of rowState?.pinnedSessionIds || []) {
+    if (!members.has(id) || included.has(id) || archived.has(id) || summaries?.[id] === undefined) continue;
+    pins.push(id);
+    included.add(id);
+  }
+  const remaining = [...members].filter(id => !included.has(id));
+  const ordinary = [];
+  const archives = [];
+  const summarized = new Set();
+  for (const id of orderByRecency(remaining, summaries)) {
+    summarized.add(id);
+    if (archived.has(id)) archives.push(id);
+    else ordinary.push(id);
+  }
+  const unsummarized = remaining.filter(id => !summarized.has(id));
+  const reconciled = [...pins, ...ordered, ...ordinary, ...archives, ...unsummarized];
+  const pinnedSection = [];
+  const unpinnedSection = [];
+  const archivedSection = [];
+  for (const id of reconciled) {
+    if (archived.has(id)) archivedSection.push(id);
+    else if (pinned.has(id)) pinnedSection.push(id);
+    else unpinnedSection.push(id);
+  }
+  return [...pinnedSection, ...unpinnedSection, ...archivedSection];
+}
+
+// Computes the minimal sequence of insertSessionBefore moves (via LIS) needed
+// to turn currentIds into desiredOrder while preserving unaccounted tail items.
+function planSessionMoves(currentIds, desiredOrder) {
+  if (!Array.isArray(currentIds) || currentIds.length <= 1 || !Array.isArray(desiredOrder)) return [];
+  const currentSet = new Set(currentIds);
+  const target = [];
+  const seen = new Set();
+  for (const id of desiredOrder) {
+    if (!currentSet.has(id) || seen.has(id)) continue;
+    seen.add(id);
+    target.push(id);
+  }
+  for (const id of currentIds) {
+    if (seen.has(id)) continue;
+    seen.add(id);
+    target.push(id);
+  }
+  if (arraysEqual(currentIds, target)) return [];
+
+  const rankOf = new Map(target.map((id, index) => [id, index]));
+  const ranks = currentIds.map(id => rankOf.get(id));
+  const tails = [];
+  const tailIdx = [];
+  const prev = new Array(ranks.length).fill(-1);
+  for (let i = 0; i < ranks.length; i++) {
+    const rank = ranks[i];
+    let lo = 0;
+    let hi = tails.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (tails[mid] < rank) lo = mid + 1;
+      else hi = mid;
+    }
+    tails[lo] = rank;
+    tailIdx[lo] = i;
+    if (lo > 0) prev[i] = tailIdx[lo - 1];
+  }
+  const keep = new Set();
+  for (let idx = tailIdx.length ? tailIdx[tailIdx.length - 1] : -1; idx !== -1; idx = prev[idx]) {
+    keep.add(currentIds[idx]);
+  }
+
+  const working = [...currentIds];
+  const moves = [];
+  for (let i = target.length - 1; i >= 0; i--) {
+    const sessionId = target[i];
+    if (keep.has(sessionId)) continue;
+    const beforeSessionId = i + 1 < target.length ? target[i + 1] : undefined;
+    const currentPos = working.indexOf(sessionId);
+    const alreadyInPlace = beforeSessionId === undefined
+      ? currentPos === working.length - 1
+      : working[currentPos + 1] === beforeSessionId;
+    if (alreadyInPlace) continue;
+    moves.push(beforeSessionId === undefined ? { sessionId } : { sessionId, beforeSessionId });
+    working.splice(currentPos, 1);
+    const insertAt = beforeSessionId === undefined ? working.length : working.indexOf(beforeSessionId);
+    working.splice(insertAt, 0, sessionId);
+  }
+  return moves;
+}
+
+function readMigratedWorkspaces(storage) {
+  try {
+    const raw = storage?.getItem?.(SESSION_ORDER_MIGRATED_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? new Set(parsed.filter(id => typeof id === 'string' && id)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function writeMigratedWorkspaces(storage, migrated) {
+  try {
+    storage?.setItem?.(SESSION_ORDER_MIGRATED_KEY, JSON.stringify([...migrated].sort()));
+  } catch { /* storage unavailable or quota exceeded */ }
+}
+
+// Synchronizes manual sidebar session order with each workspace's owning Host
+// using DSH's native workspace/insertSessionBefore RPC and workspace/follow stream.
+function installSessionOrderSync(ctx, entry, { signal, storage } = {}) {
+  const noop = { wrapActions: actions => actions, dispose() {} };
+  const viewInstance = typeof entry?.store?.create === 'function' ? entry.store.create() : undefined;
+  const viewActions = viewInstance?.actions;
+  if (!viewActions || typeof viewInstance.getSnapshot !== 'function'
+    || typeof viewActions.syncSessionOrders !== 'function'
+    || typeof viewActions.setSessionOrder !== 'function'
+    || typeof ctx.workspaces?.insertSessionBefore !== 'function'
+    || typeof ctx.workspaces?.list?.getSnapshot !== 'function'
+    || typeof ctx.workspaces?.list?.subscribe !== 'function') {
+    return noop;
+  }
+
+  const resolvedStorage = storage === undefined ? globalThis.localStorage : storage;
+  const migrated = readMigratedWorkspaces(resolvedStorage);
+  const pendingWrites = new Map();
+  const migrating = new Set();
+  const wrappedActionCache = new WeakMap();
+  let disposed = false;
+
+  const isStopped = () => disposed || Boolean(signal?.aborted);
+  const workspaceById = workspaceId => ctx.workspaces.list.getSnapshot()?.items?.find(row => row.workspaceId === workspaceId);
+
+  const origSetSessionOrder = viewActions.setSessionOrder;
+  const origPinSessionOrder = viewActions.pinSessionOrder;
+  const origSetOrderBy = viewActions.setOrderBy;
+  const origSyncSessionOrders = viewActions.syncSessionOrders;
+
+  function markMigrated(workspaceIds) {
+    let changed = false;
+    for (const id of workspaceIds) {
+      if (!id || isRemoteWorkspaceId(id) || migrated.has(id)) continue;
+      migrated.add(id);
+      changed = true;
+    }
+    if (changed) writeMigratedWorkspaces(resolvedStorage, migrated);
+  }
+
+  function pullHostOrders(onlyWorkspaceIds) {
+    if (isStopped()) return;
+    const view = viewInstance.getSnapshot();
+    if (view?.orderBy !== 'manual') return;
+    const wsSnap = ctx.workspaces.list.getSnapshot();
+    if (!wsSnap || wsSnap.phase !== 'ready') return;
+    const summaries = ctx.sessions?.list?.getSnapshot?.()?.byId;
+    const updates = {};
+    for (const ws of wsSnap.items || []) {
+      const id = ws.workspaceId;
+      if (onlyWorkspaceIds && !onlyWorkspaceIds.has(id)) continue;
+      if (pendingWrites.has(id) || migrating.has(id)) continue;
+      if (!isRemoteWorkspaceId(id) && !migrated.has(id)) continue;
+      const hostIds = Array.isArray(ws.sessionIds) ? ws.sessionIds : [];
+      const hostSet = new Set(hostIds);
+      const saved = view.sessionOrderByAccount?.[id];
+      const leadingBlanks = [];
+      if (Array.isArray(saved) && summaries) {
+        for (const sessionId of saved) {
+          if (hostSet.has(sessionId) || !summaries[sessionId]?.blank) break;
+          leadingBlanks.push(sessionId);
+        }
+      }
+      const nextOrder = leadingBlanks.length ? [...leadingBlanks, ...hostIds] : [...hostIds];
+      if (!arraysEqual(saved, nextOrder)) updates[id] = nextOrder;
+    }
+    if (Object.keys(updates).length > 0) origSyncSessionOrders.call(viewActions, updates);
+  }
+
+  function enqueueHostWrite(workspaceId, desiredOrder, { persistMigrated = false } = {}) {
+    if (isStopped() || !workspaceId || !Array.isArray(desiredOrder)) return Promise.resolve(false);
+    let state = pendingWrites.get(workspaceId);
+    if (!state) {
+      state = { desired: [...desiredOrder], persistMigrated, running: false, promise: null };
+      pendingWrites.set(workspaceId, state);
+    } else {
+      state.desired = [...desiredOrder];
+      if (persistMigrated) state.persistMigrated = true;
+    }
+    if (state.running) return state.promise;
+
+    state.running = true;
+    state.promise = (async () => {
+      let succeeded = false;
+      try {
+        while (!isStopped()) {
+          const desired = state.desired;
+          state.desired = null;
+          const ws = workspaceById(workspaceId);
+          if (!ws) { succeeded = false; break; }
+          const moves = planSessionMoves(ws.sessionIds || [], desired);
+          let failed = false;
+          for (const { sessionId, beforeSessionId } of moves) {
+            if (isStopped()) { failed = true; break; }
+            if (state.desired !== null) break;
+            try {
+              await ctx.workspaces.insertSessionBefore(workspaceId, sessionId, beforeSessionId);
+            } catch (error) {
+              console.warn('[remote-workspaces] Session order sync failed', workspaceId, error);
+              failed = true;
+              break;
+            }
+          }
+          if (state.desired !== null) continue;
+          succeeded = !failed;
+          break;
+        }
+        if (succeeded && state.persistMigrated && !isRemoteWorkspaceId(workspaceId)) {
+          markMigrated([workspaceId]);
+        }
+      } finally {
+        if (pendingWrites.get(workspaceId) === state) pendingWrites.delete(workspaceId);
+        migrating.delete(workspaceId);
+      }
+      if (!isStopped()) pullHostOrders(new Set([workspaceId]));
+      return succeeded;
+    })();
+    return state.promise;
+  }
+
+  function reconcile() {
+    if (isStopped()) return;
+    const view = viewInstance.getSnapshot();
+    const wsSnap = ctx.workspaces.list.getSnapshot();
+    if (!wsSnap || wsSnap.phase !== 'ready' || view?.orderBy !== 'manual') return;
+    const sessSnap = ctx.sessions?.list?.getSnapshot?.();
+    const sessionsReady = !ctx.sessions?.list || sessSnap?.phase === 'ready';
+
+    for (const ws of wsSnap.items || []) {
+      const id = ws.workspaceId;
+      if (isRemoteWorkspaceId(id) || migrated.has(id) || migrating.has(id) || pendingWrites.has(id)) continue;
+      const saved = view.sessionOrderByAccount?.[id];
+      const hostIds = Array.isArray(ws.sessionIds) ? ws.sessionIds : [];
+      if (!Array.isArray(saved) || saved.length === 0) {
+        markMigrated([id]);
+        continue;
+      }
+      const savedSet = new Set(saved);
+      const coversAll = hostIds.every(sessionId => savedSet.has(sessionId));
+      if (!sessionsReady && !coversAll) continue;
+      const desired = reconcileDisplayOrder(hostIds, saved, sessSnap?.byId || {}, {
+        pinnedSessionIds: wsSnap.pinnedSessionIds,
+        archivedSessionIds: wsSnap.archivedSessionIds,
+      });
+      if (planSessionMoves(hostIds, desired).length === 0) {
+        markMigrated([id]);
+        continue;
+      }
+      migrating.add(id);
+      void enqueueHostWrite(id, desired, { persistMigrated: true });
+    }
+    pullHostOrders();
+  }
+
+  function wrappedSetSessionOrder(accountKey, order, initialOrders) {
+    const wasUpdated = viewInstance.getSnapshot()?.orderBy === 'updated';
+    const result = origSetSessionOrder.call(viewActions, accountKey, order, initialOrders);
+    if (!isStopped()) {
+      const ws = workspaceById(accountKey);
+      if (ws && Array.isArray(order)) {
+        void enqueueHostWrite(accountKey, order, { persistMigrated: !isRemoteWorkspaceId(accountKey) });
+      }
+      if (wasUpdated) {
+        const wsSnap = ctx.workspaces.list.getSnapshot();
+        const others = new Set();
+        const localOthers = [];
+        for (const row of wsSnap?.items || []) {
+          if (row.workspaceId === accountKey) continue;
+          others.add(row.workspaceId);
+          if (!isRemoteWorkspaceId(row.workspaceId)) localOthers.push(row.workspaceId);
+        }
+        markMigrated(localOthers);
+        pullHostOrders(others);
+      }
+    }
+    return result;
+  }
+
+  function wrappedPinSessionOrder(sessionId, accountKeys, source) {
+    const result = origPinSessionOrder ? origPinSessionOrder.call(viewActions, sessionId, accountKeys, source) : undefined;
+    if (!isStopped()) {
+      const view = viewInstance.getSnapshot();
+      for (const key of Array.isArray(accountKeys) ? accountKeys : []) {
+        const ws = workspaceById(key);
+        if (!ws || !Array.isArray(ws.sessionIds) || !ws.sessionIds.includes(sessionId)) continue;
+        const desired = view?.orderBy === 'manual' && Array.isArray(view.sessionOrderByAccount?.[key])
+          ? view.sessionOrderByAccount[key]
+          : [sessionId, ...ws.sessionIds.filter(id => id !== sessionId)];
+        void enqueueHostWrite(key, desired, { persistMigrated: !isRemoteWorkspaceId(key) });
+      }
+    }
+    return result;
+  }
+
+  function wrappedSetOrderBy(mode, initialOrders) {
+    const result = origSetOrderBy ? origSetOrderBy.call(viewActions, mode, initialOrders) : undefined;
+    if (!isStopped() && mode === 'manual') {
+      const wsSnap = ctx.workspaces.list.getSnapshot();
+      markMigrated((wsSnap?.items || []).map(row => row.workspaceId));
+      pullHostOrders();
+    }
+    return result;
+  }
+
+  viewActions.setSessionOrder = wrappedSetSessionOrder;
+  if (origPinSessionOrder) viewActions.pinSessionOrder = wrappedPinSessionOrder;
+  if (origSetOrderBy) viewActions.setOrderBy = wrappedSetOrderBy;
+
+  const unsubWorkspaces = ctx.workspaces.list.subscribe(reconcile);
+  const unsubSessions = typeof ctx.sessions?.list?.subscribe === 'function'
+    ? ctx.sessions.list.subscribe(reconcile)
+    : undefined;
+  const onAbort = () => dispose();
+  signal?.addEventListener?.('abort', onAbort, { once: true });
+
+  reconcile();
+
+  function wrapActions(actions) {
+    if (!actions || actions === viewActions) return actions;
+    let wrapped = wrappedActionCache.get(actions);
+    if (!wrapped) {
+      wrapped = {
+        ...actions,
+        setSessionOrder: wrappedSetSessionOrder,
+        ...(origPinSessionOrder ? { pinSessionOrder: wrappedPinSessionOrder } : {}),
+        ...(origSetOrderBy ? { setOrderBy: wrappedSetOrderBy } : {}),
+      };
+      wrappedActionCache.set(actions, wrapped);
+    }
+    return wrapped;
+  }
+
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    signal?.removeEventListener?.('abort', onAbort);
+    unsubWorkspaces?.();
+    unsubSessions?.();
+    if (viewActions.setSessionOrder === wrappedSetSessionOrder) viewActions.setSessionOrder = origSetSessionOrder;
+    if (origPinSessionOrder && viewActions.pinSessionOrder === wrappedPinSessionOrder) viewActions.pinSessionOrder = origPinSessionOrder;
+    if (origSetOrderBy && viewActions.setOrderBy === wrappedSetOrderBy) viewActions.setOrderBy = origSetOrderBy;
+    pendingWrites.clear();
+    migrating.clear();
+  }
+
+  return { wrapActions, dispose };
 }
 
     function browserInputUrl(value) {
@@ -1019,18 +1410,21 @@ function installSessionResources(ctx, carrier, React, lifetime) {
         upload.post = post;
         ctx.effect(() => () => { if (upload.post === post) upload.post = originalPost; }, 'remote-workspaces: session attachments');
         // Preserve the native folder component and every action. Only avoid
-        // path-tree grouping, which would nest identically named computers.
+        // path-tree grouping, which would nest identically named computers,
+        // and sync manual sidebar session order with each workspace's Host.
         const entries = new Map();
         function reconcile() {
           for (const entry of ctx.slots.entries('sidebar.workspaces')) {
             if (entries.has(entry) || !entry.children?.['sidebar.workspaces.directoryFlow'] || typeof entry.component !== 'function') continue;
             const Native = entry.component;
+            const orderSync = installSessionOrderSync(ctx, entry, { signal: stop.signal });
             function WorkspacePeers(props) {
               const useStore = (selector, equal) => props.useStore(value => selector(value.groupBy === 'workspace-tree' ? { ...value, groupBy: 'workspace' } : value), equal);
-              return React.createElement(Native, { ...props, useStore });
+              const actions = orderSync.wrapActions(props.actions);
+              return React.createElement(Native, { ...props, useStore, ...(actions === props.actions ? {} : { actions }) });
             }
             entry.component = WorkspacePeers;
-            entries.set(entry, { original: Native, wrapper: WorkspacePeers });
+            entries.set(entry, { original: Native, wrapper: WorkspacePeers, orderSync });
           }
         }
         ctx.slots.inject('sidebar.workspaces', () => {
@@ -1038,7 +1432,10 @@ function installSessionResources(ctx, carrier, React, lifetime) {
           const unsubscribe = ctx.slots.subscribe('sidebar.workspaces', reconcile);
           return () => {
             unsubscribe();
-            for (const [entry, saved] of entries) if (entry.component === saved.wrapper) entry.component = saved.original;
+            for (const [entry, saved] of entries) {
+              saved.orderSync.dispose();
+              if (entry.component === saved.wrapper) entry.component = saved.original;
+            }
             entries.clear();
           };
         });

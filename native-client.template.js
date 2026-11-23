@@ -7,6 +7,7 @@ window.__ModuleLoader__.load({
     /* CARRIER */
     /* MODELS */
     /* RESIDENCY */
+    /* SESSION_ORDER */
     /* BROWSER */
     /* RESOURCE_MENUS */
     /* RESOURCES */
@@ -38,18 +39,21 @@ window.__ModuleLoader__.load({
         upload.post = post;
         ctx.effect(() => () => { if (upload.post === post) upload.post = originalPost; }, 'remote-workspaces: session attachments');
         // Preserve the native folder component and every action. Only avoid
-        // path-tree grouping, which would nest identically named computers.
+        // path-tree grouping, which would nest identically named computers,
+        // and sync manual sidebar session order with each workspace's Host.
         const entries = new Map();
         function reconcile() {
           for (const entry of ctx.slots.entries('sidebar.workspaces')) {
             if (entries.has(entry) || !entry.children?.['sidebar.workspaces.directoryFlow'] || typeof entry.component !== 'function') continue;
             const Native = entry.component;
+            const orderSync = installSessionOrderSync(ctx, entry, { signal: stop.signal });
             function WorkspacePeers(props) {
               const useStore = (selector, equal) => props.useStore(value => selector(value.groupBy === 'workspace-tree' ? { ...value, groupBy: 'workspace' } : value), equal);
-              return React.createElement(Native, { ...props, useStore });
+              const actions = orderSync.wrapActions(props.actions);
+              return React.createElement(Native, { ...props, useStore, ...(actions === props.actions ? {} : { actions }) });
             }
             entry.component = WorkspacePeers;
-            entries.set(entry, { original: Native, wrapper: WorkspacePeers });
+            entries.set(entry, { original: Native, wrapper: WorkspacePeers, orderSync });
           }
         }
         ctx.slots.inject('sidebar.workspaces', () => {
@@ -57,7 +61,10 @@ window.__ModuleLoader__.load({
           const unsubscribe = ctx.slots.subscribe('sidebar.workspaces', reconcile);
           return () => {
             unsubscribe();
-            for (const [entry, saved] of entries) if (entry.component === saved.wrapper) entry.component = saved.original;
+            for (const [entry, saved] of entries) {
+              saved.orderSync.dispose();
+              if (entry.component === saved.wrapper) entry.component = saved.original;
+            }
             entries.clear();
           };
         });

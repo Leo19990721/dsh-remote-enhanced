@@ -8,7 +8,7 @@ test('the workspace sidebar stays native and does not mount or run a health chec
   for (const file of ['native-client.template.js', 'native-client.js']) {
     const client = await source(file);
     assert.doesNotMatch(client, /createHealthState|healthComponent|Remote 自检|Remote check|\bselfCheck\b/, file);
-    assert.match(client, /return React\.createElement\(Native, \{ \.\.\.props, useStore \}\);/, file);
+    assert.match(client, /return React\.createElement\(Native, \{ \.\.\.props, useStore\b/, file);
     assert.match(client, /entry\.component = saved\.original/, file);
   }
 });

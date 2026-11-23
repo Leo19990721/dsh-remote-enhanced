@@ -116,7 +116,7 @@ assert.equal(/^\s*name:\s*'([^']+)'/m.exec(bundlePatch)?.[1], manifest.name, 'Bu
 assert.equal(/^window\.__ModuleLoader__\.load\(\{\s*id:\s*'([^']+)'/.exec(client)?.[1], manifest.name, 'Client module id must match the packed package');
 assert.match(files.get('cordis.patch.yml'), /filePreviewTargets:\s*\[\]/);
 assert.doesNotMatch(files.get('cordis.patch.yml'), /profileDirectory|hostId:|port:/);
-assert.doesNotMatch(files.get('native-client.js'), /\/\* (?:STREAMS|CARRIER|MODELS|RESIDENCY|BROWSER|RESOURCE_MENUS|RESOURCES|DICTIONARIES) \*\//);
+assert.doesNotMatch(files.get('native-client.js'), /\/\* (?:STREAMS|CARRIER|MODELS|RESIDENCY|SESSION_ORDER|BROWSER|RESOURCE_MENUS|RESOURCES|DICTIONARIES) \*\//);
 assert.match(files.get('REMOTE-LICENSE.txt'), /Copyright \(c\) 2026 DSH Remote contributors/);
 console.log(`Verified ${files.size} packed files, syntax, exports and runtime import closure.`);
 '@
