@@ -221,10 +221,10 @@ test('planSessionMoves computes exact minimal moves across common drags and 300 
   }
 });
 
-test('reconcileDisplayOrder places pinned sessions before unpinned and archived last', () => {
+test('native raw reconciliation preserves saved pin and archived slots', () => {
   const result = reconcileDisplayOrder(
     ['u1', 'p2', 'a1', 'p1', 'u2', 'u3'],
-    ['u2', 'p1', 'u1'],
+    ['u2', 'a1', 'p1', 'u1'],
     {
       u1: { updatedAt: 10 },
       u2: { updatedAt: 20 },
@@ -235,9 +235,8 @@ test('reconcileDisplayOrder places pinned sessions before unpinned and archived 
     },
     { pinnedSessionIds: ['p2', 'p1'], archivedSessionIds: ['a1'] },
   );
-  // p2 wasn't in savedOrder so native reconcileManualOrder prepends it before p1;
-  // pinned section precedes unpinned [u2, u1, u3] and archived [a1] goes last.
-  assert.deepEqual(result, ['p2', 'p1', 'u2', 'u1', 'u3', 'a1']);
+  // The renderer groups visible pins without changing other saved positions.
+  assert.deepEqual(result, ['p2', 'u2', 'a1', 'p1', 'u1', 'u3']);
 });
 
 test('one-time local migration pushes existing local order to local Host without touching remote Hosts', async () => {
@@ -450,4 +449,156 @@ test('wrapActions forwards cloned action objects and dispose restores original a
   assert.equal(f.viewActions.setSessionOrder, origSet);
   assert.equal(f.viewActions.pinSessionOrder, origPin);
   assert.equal(f.viewActions.setOrderBy, origMode);
+});
+
+const migrationKey = 'dsh.remote-enhanced.session-order-migrated.v1';
+const fallbackKey = 'dsh.remote-enhanced.session-order-local-only.v1';
+const revision = n => new Date(n).toISOString();
+
+function freshCarrier(baseHost, readWorkspaceOrder) {
+  return { baseHost, canSyncWorkspaceOrder: true, readWorkspaceOrder: async id => ({ ok: true, value: { workspace: await readWorkspaceOrder(id) } }) };
+}
+
+test('a remote base view never migrates unqualified remote layout and can migrate its physically local workspace', async () => {
+  const localWs = 'dsh-peer:["local","workspace","local-ws"]';
+  const remoteWs = 'remote-ws';
+  const f = createFixture({
+    sessionOrderByAccount: { [localWs]: ['l2', 'l1'], [remoteWs]: ['r2', 'r1'] },
+    workspaces: [{ workspaceId: localWs, sessionIds: ['l1', 'l2'] }, { workspaceId: remoteWs, sessionIds: ['r1', 'r2'] }],
+  });
+  const opened = [];
+  const carrier = freshCarrier('host-b', id => { opened.push(id); return f.getWorkspaces().items.find(row => row.workspaceId === id); });
+  const c = installSessionOrderSync(f.ctx, f.entry, { storage: f.storage, carrier });
+  try {
+    await flush();
+    assert.deepEqual(opened, [localWs]);
+    assert.ok(f.calls.length && f.calls.every(call => call.workspaceId === localWs));
+    assert.deepEqual(JSON.parse(f.storage.getItem(migrationKey)), ['local-ws']);
+    assert.deepEqual(f.getView().sessionOrderByAccount[remoteWs], ['r1', 'r2']);
+  } finally { c.dispose(); }
+});
+
+test('writes plan from a fresh host baseline and do not regress on stale replaces after ack', async () => {
+  const ws = 'dsh-peer:["host-b","workspace","ws"]';
+  const stale = { workspaceId: ws, sessionIds: ['b', 'a', 'c'], updatedAt: revision(1) };
+  let host = { workspaceId: ws, sessionIds: ['a', 'new', 'b', 'c'], updatedAt: revision(2) };
+  const f = createFixture({ workspaces: [stale], onInsert({ sessionId, beforeSessionId }) {
+    host = { ...host, sessionIds: applyMoves(host.sessionIds, [{ sessionId, beforeSessionId }]), updatedAt: revision(Date.parse(host.updatedAt) + 1) };
+    return host; // No native mutation echo on the stale list yet.
+  } });
+  const c = installSessionOrderSync(f.ctx, f.entry, { storage: f.storage, carrier: freshCarrier('local', () => host) });
+  try {
+    f.viewActions.setSessionOrder(ws, ['b', 'a', 'c'], {});
+    await flush();
+    assert.deepEqual(host.sessionIds, ['b', 'new', 'a', 'c']);
+    f.setWorkspaces({ items: [stale] });
+    assert.deepEqual(f.getView().sessionOrderByAccount[ws], ['b', 'new', 'a', 'c']);
+    const changed = { ...host, sessionIds: ['c', 'b', 'a', 'new'], updatedAt: revision(10) };
+    f.setWorkspaces({ items: [changed] });
+    assert.deepEqual(f.getView().sessionOrderByAccount[ws], changed.sessionIds);
+  } finally { c.dispose(); }
+});
+
+test('unsupported peers keep browser-local order without blocking other peers', async () => {
+  const first = 'dsh-peer:["host-b","workspace","ws"]';
+  const second = 'dsh-peer:["host-b","workspace","ws2"]';
+  const third = 'dsh-peer:["host-c","workspace","ws"]';
+  const f = createFixture({ workspaces: [first, second, third].map(workspaceId => ({ workspaceId, sessionIds: ['a', 'b', 'c'] })),
+    onInsert({ workspaceId, mutate }) {
+      if (workspaceId === first) throw new Error('workspace move failed: METHOD_NOT_ALLOWED: old bridge');
+      return mutate();
+    },
+  });
+  const c = installSessionOrderSync(f.ctx, f.entry, { storage: f.storage });
+  try {
+    for (const id of [first, second, third]) {
+      f.viewActions.setSessionOrder(id, ['b', 'c', 'a'], {});
+      await flush();
+    }
+    assert.deepEqual(f.calls.map(call => call.workspaceId), [first, third]);
+    assert.deepEqual(f.getView().sessionOrderByAccount, { [first]: ['b', 'c', 'a'], [second]: ['b', 'c', 'a'], [third]: ['b', 'c', 'a'] });
+    assert.deepEqual(JSON.parse(f.storage.getItem(fallbackKey)).sort(), [first, second].sort());
+  } finally { c.dispose(); }
+});
+
+test('denied or offline writes retain local order across reconnect and reload; never auto-replay', async () => {
+  for (const code of ['remote-access/denied', 'HOST_OFFLINE']) {
+    const ws = 'dsh-peer:["host-b","workspace","ws"]';
+    const row = { workspaceId: ws, sessionIds: ['a', 'b', 'c'], updatedAt: revision(1) };
+    const f = createFixture({ workspaces: [row], onInsert() { throw Object.assign(new Error(code), { code }); } });
+    const c = installSessionOrderSync(f.ctx, f.entry, { storage: f.storage });
+    f.viewActions.setSessionOrder(ws, ['b', 'c', 'a'], {});
+    await flush();
+    f.setWorkspaces({ items: [row] });
+    assert.deepEqual(f.getView().sessionOrderByAccount[ws], ['b', 'c', 'a']);
+    c.dispose();
+    const g = createFixture({ workspaces: [row], sessionOrderByAccount: f.getView().sessionOrderByAccount, storage: f.storage });
+    const d = installSessionOrderSync(g.ctx, g.entry, { storage: g.storage });
+    try {
+      await flush();
+      assert.deepEqual(g.getView().sessionOrderByAccount[ws], ['b', 'c', 'a']);
+      assert.equal(g.calls.length, 0);
+    } finally { d.dispose(); }
+  }
+});
+
+test('two Manual clients converge through the owning workspace while Updated remains local', async () => {
+  const localWs = 'w';
+  const remoteWs = 'dsh-peer:["owner-pc","workspace","w"]';
+  const remoteId = id => `dsh-peer:["owner-pc","session","${id}"]`;
+  let host = ['p2', 'u2', 'arch', 'p1', 'u1'];
+  let version = 1;
+  const localRow = () => ({ workspaceId: localWs, sessionIds: host, updatedAt: revision(version) });
+  const remoteRow = () => ({ ...localRow(), workspaceId: remoteWs, sessionIds: host.map(remoteId) });
+  const publish = () => {
+    a.setWorkspaces({ items: [localRow()] });
+    b.setWorkspaces({ items: [remoteRow()] });
+  };
+  const move = (sessionId, beforeSessionId) => {
+    host = applyMoves(host, [{ sessionId, beforeSessionId }]);
+    version++;
+    publish();
+  };
+  const a = createFixture({ workspaces: [localRow()], sessionOrderByAccount: { [localWs]: ['p1', 'u1', 'arch', 'p2', 'u2'] },
+    onInsert({ sessionId, beforeSessionId }) { move(sessionId, beforeSessionId); return localRow(); } });
+  const b = createFixture({ orderBy: 'updated', workspaces: [remoteRow()],
+    onInsert({ sessionId, beforeSessionId }) {
+      const decode = id => id === undefined ? undefined : JSON.parse(id.slice(9))[2];
+      move(decode(sessionId), decode(beforeSessionId));
+      return remoteRow();
+    } });
+  const ac = installSessionOrderSync(a.ctx, a.entry, { storage: a.storage, carrier: freshCarrier('local', localRow) });
+  const bc = installSessionOrderSync(b.ctx, b.entry, { storage: b.storage, carrier: freshCarrier('local', remoteRow) });
+  try {
+    await flush();
+    assert.deepEqual(host, ['p1', 'u1', 'arch', 'p2', 'u2']);
+    assert.equal(b.getView().orderBy, 'updated');
+    b.viewActions.setOrderBy('manual', { [remoteWs]: [] });
+    assert.deepEqual(b.getView().sessionOrderByAccount[remoteWs], host.map(remoteId));
+    b.viewActions.setSessionOrder(remoteWs, ['p1', 'u2', 'u1', 'arch', 'p2'].map(remoteId), {});
+    await flush();
+    assert.deepEqual(host, ['p1', 'u2', 'u1', 'arch', 'p2']);
+    assert.deepEqual(a.getView().sessionOrderByAccount[localWs], host);
+    assert.deepEqual(b.getView().sessionOrderByAccount[remoteWs], host.map(remoteId));
+    assert.equal(b.calls.length, 1, 'the owner does not echo remote layout as new writes');
+  } finally { ac.dispose(); bc.dispose(); }
+});
+
+test('the owner migration does not move archived slots or import a stale cached workspace', async () => {
+  const workspaceId = 'local-ws';
+  const wanted = ['u2', 'a', 'p2', 'u1', 'p1'];
+  let host = { workspaceId, sessionIds: ['p1', 'a', 'u1', 'u2', 'p2'], updatedAt: revision(9) };
+  const f = createFixture({ sessionOrderByAccount: { [workspaceId]: wanted }, workspaces: [{ workspaceId, sessionIds: wanted, updatedAt: revision(1) }],
+    onInsert({ sessionId, beforeSessionId }) {
+      host = { ...host, sessionIds: applyMoves(host.sessionIds, [{ sessionId, beforeSessionId }]), updatedAt: revision(Date.parse(host.updatedAt) + 1) };
+      return host;
+    },
+  });
+  const c = installSessionOrderSync(f.ctx, f.entry, { storage: f.storage, carrier: freshCarrier('local', () => host) });
+  try {
+    await flush();
+    assert.ok(f.calls.length, 'matching stale cache must not mark migration without comparing live Host order');
+    assert.deepEqual(host.sessionIds, wanted);
+    assert.deepEqual(JSON.parse(f.storage.getItem(migrationKey)), [workspaceId]);
+  } finally { c.dispose(); }
 });

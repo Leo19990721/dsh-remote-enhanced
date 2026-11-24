@@ -11,9 +11,10 @@ import { carrierRegistry } from './carrier-fixture.js';
 test('authenticated HTTP route drives native carrier calls and streams end to end', { timeout: 5000 }, async () => {
   let route; const disposers = [];
   const peer = { principal: { kind: 'owner' }, signal: new AbortController().signal };
-  const calls = [], localCalls = [];
+  const calls = [], localCalls = [], workspaceStreams = [];
   const ctx = {
-    connection: { admit: request => request.headers['x-test-owner'] === 'owner' ? { peer } : { rejection: 401 } },
+    connection: { admit: request => request.headers['x-test-owner'] === 'owner' ? { peer }
+      : request.headers['x-test-owner'] === 'guest' ? { peer: { ...peer, principal: { kind: 'test-guest' } } } : { rejection: 401 } },
     waterfall(event, input, next) {
       assert.equal(event, 'session-hosts/local-call');
       assert.equal(input.peer, peer);
@@ -36,7 +37,16 @@ test('authenticated HTTP route drives native carrier calls and streams end to en
       if (endpoint === 'remoteUploads/upload') return { ok: true, value: { status: 200, json: { ok: true, value: { receiptId: 'synthetic' } } } };
       return { ok: true, value: { sessionId: 's' } };
     },
-    open() { return (async function* () { yield { type: 'snapshot', header: { id: 's' }, records: [] }; })(); },
+    open(endpoint, _payload, signal) { return (async function* () {
+      if (endpoint === 'workspace/follow') {
+        workspaceStreams.push(['open', hostId]);
+        try {
+          yield { type: 'baseline', value: { items: [{ workspaceId: 'w', path: '/private', title: 'Hidden', sessionIds: ['s', 't'], updatedAt: '2026-11-24T00:00:00Z' }], pinnedSessionIds: ['outside', 't'] } };
+        } finally { workspaceStreams.push(['close', hostId, signal.aborted]); }
+        return;
+      }
+      yield { type: 'snapshot', header: { id: 's' }, records: [] };
+    })(); },
   });
   let currentHost = 'local';
   const diagnostics = registerFederatedRoute(ctx, {
@@ -57,7 +67,7 @@ test('authenticated HTTP route drives native carrier calls and streams end to en
   let carrier, remoteBase;
   try {
     assert.equal((await fetch(base + 'dsh-session-hosts/attach', { method: 'POST' })).status, 401);
-    const client = { typert: carrierRegistry(['session/rename', 'session/follow', 'session/openWorkspacePath']), connection: { rpc: { call: rpc } } };
+    const client = { typert: carrierRegistry(['session/rename', 'session/follow', 'session/openWorkspacePath', 'workspace/insertSessionBefore']), connection: { rpc: { call: rpc } } };
     carrier = await installSessionCarrier(client, { fetch: send });
     assert.deepEqual(diagnostics(), [{ sockets: 0, hosts: [] }]);
     assert.doesNotMatch(JSON.stringify(diagnostics()), /sessionId|viewId|title/);
@@ -68,6 +78,14 @@ test('authenticated HTTP route drives native carrier calls and streams end to en
     const localPayload = { args: { request: { sessionId: 's' } } };
     assert.equal((await client.connection.rpc.call('/api', 'session/rename', localPayload)).ok, true);
     assert.deepEqual(localCalls, ['session/rename']);
+    const ws = 'dsh-peer:' + JSON.stringify(['remote', 'workspace', 'w']);
+    const pinned = 'dsh-peer:' + JSON.stringify(['remote', 'session', 't']);
+    assert.equal(carrier.canSyncWorkspaceOrder, true);
+    assert.equal((await fetch(base + 'dsh-session-hosts/workspaceOrderView', { method: 'POST', headers: { 'x-test-owner': 'guest' } })).status, 403);
+    assert.deepEqual(await carrier.readWorkspaceOrder(ws, peer.signal), { ok: true, value: {
+      workspace: { workspaceId: ws, sessionIds: [id, pinned], updatedAt: '2026-11-24T00:00:00Z' }, pinnedSessionIds: [pinned], archivedSessionIds: [],
+    } });
+    assert.deepEqual(workspaceStreams, [['open', 'remote'], ['close', 'remote', true]]);
     const values = [];
     for await (const value of client.connection.rpc.open('/api', 'session/follow', { args: { request: { sessionId: id } } }, peer.signal)) values.push(value);
     assert.equal(values[0].header.id, id);

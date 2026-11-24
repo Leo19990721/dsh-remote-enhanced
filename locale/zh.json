@@ -47,6 +47,9 @@
     "connectionConnectionTimeout": "连接超时。请确认那台电脑已联网并打开 DSH，再试一次。",
     "connectionAuthorizationRequired": "请打开远程工作台，检查登录和设备授权。",
     "connectionConnectionInterrupted": "远程连接断开了。请在远程工作台查看连接状态。",
-    "connectionConnectionFailed": "暂时连不上。请确认那台电脑已联网并打开 DSH。"
+    "connectionConnectionFailed": "暂时连不上。请确认那台电脑已联网并打开 DSH。",
+    "sessionOrderUnsupported": "这台电脑不支持同步会话顺序。本次顺序仅保留在此界面。",
+    "sessionOrderDenied": "会话顺序未获准同步。本次顺序仅保留在此界面。",
+    "sessionOrderNotSynced": "未能确认会话顺序已同步。本次排列保留在此界面；连接恢复后可重新拖动。"
   }
 }

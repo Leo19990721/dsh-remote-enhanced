@@ -54,7 +54,7 @@ export function registerFederatedRoute(ctx, options) {
       } finally { response.removeListener('close', closed); }
       return;
     }
-    if (request.method !== 'POST' || !['attach', 'ping', 'call', 'stream', 'close', 'modelCatalog', 'previewOpen', 'previewClose', 'previewFileClaim'].includes(endpoint)) { response.writeHead(404); response.end(); return; }
+    if (request.method !== 'POST' || !['attach', 'ping', 'call', 'stream', 'close', 'workspaceOrderView', 'modelCatalog', 'previewOpen', 'previewClose', 'previewFileClaim'].includes(endpoint)) { response.writeHead(404); response.end(); return; }
     if (String(request.headers['content-type'] || '').split(';', 1)[0].trim().toLowerCase() !== 'application/json') { response.writeHead(415); response.end(); return; }
     let message;
     try { message = await readMessage(request); }
@@ -77,7 +77,10 @@ export function registerFederatedRoute(ctx, options) {
         const view = viewOf(args.viewId, peer);
         if (endpoint === 'close') { views.delete(args.viewId); view.stop.abort(); await view.previews?.close(); result = { ok: true }; }
         else if (endpoint === 'ping') result = { ok: true };
-        else if (endpoint === 'previewOpen') {
+        else if (endpoint === 'workspaceOrderView') {
+          if (typeof args.workspaceId !== 'string' || !args.workspaceId || args.workspaceId.length > 1024) throw new Error('WORKSPACE_REQUIRED');
+          result = { ok: true, value: await view.gateway.workspaceOrderView(args.workspaceId, AbortSignal.any([signal, view.stop.signal]), peer) };
+        } else if (endpoint === 'previewOpen') {
           if (!view.previews || typeof args.sessionId !== 'string' || typeof args.url !== 'string') throw new Error('网页预览服务不可用。');
           result = { ok: true, value: await view.previews.open(args.sessionId, args.url, args.leaseId, AbortSignal.any([signal, view.stop.signal]), { fileMode: args.fileMode ?? false }) };
         }

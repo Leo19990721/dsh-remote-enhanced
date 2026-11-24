@@ -127,6 +127,36 @@ export class FederatedGateway {
     try { return { hostId, name: this.hostNames.get(hostId), ...await this.channels.retain(hostId, signal) }; }
     catch (error) { signal.throwIfAborted(); throw hostConnectionError(error, hostId, this.hostNames.get(hostId), true); }
   }
+  // Read the targeted Host's current native baseline, not the federated
+  // browser snapshot or retained offline rows. Never use a mutation as a probe.
+  async workspaceOrderView(workspaceId, signal, peer) {
+    this.owner(peer);
+    const target = this.identities.decode(workspaceId, 'workspace');
+    const stop = new AbortController();
+    const active = AbortSignal.any([signal, stop.signal, AbortSignal.timeout(10000)]);
+    let channel, iterator;
+    try {
+      if (!this.descriptor('workspace/insertSessionBefore')) throw Object.assign(new Error('Workspace ordering unavailable'), { code: 'gateway/method-unavailable' });
+      channel = await this.channel(target.hostId, peer, active);
+      const source = await channel.open('workspace/follow', { args: {} }, active);
+      iterator = source[Symbol.asyncIterator]();
+      const { value: frame } = await iterator.next();
+      active.throwIfAborted();
+      if (frame?.type !== 'baseline') throw new Error('DOMAIN_BASELINE_REQUIRED');
+      const row = frame.value.items.find(item => item.workspaceId === target.id);
+      if (!row) throw Object.assign(new Error('Workspace ordering unavailable'), { code: 'workspace/not-found' });
+      const toId = id => this.identities.encode(target.hostId, 'session', id);
+      const members = new Set(row.sessionIds);
+      return {
+        workspace: { workspaceId, sessionIds: row.sessionIds.map(toId), updatedAt: row.updatedAt },
+        pinnedSessionIds: (frame.value.pinnedSessionIds || []).filter(id => members.has(id)).map(toId),
+        archivedSessionIds: (frame.value.archivedSessionIds || []).filter(id => members.has(id)).map(toId),
+      };
+    } finally {
+      stop.abort();
+      try { await iterator?.return?.(); } finally { await channel?.release?.(); }
+    }
+  }
   async call(endpoint, payload, signal = EMPTY(), peer, dispatchLocal) {
     this.owner(peer); signal.throwIfAborted();
     if (endpoint === '$events/result') return this.events.answer(payload, signal, peer);

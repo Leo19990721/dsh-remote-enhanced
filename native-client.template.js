@@ -46,7 +46,7 @@ window.__ModuleLoader__.load({
           for (const entry of ctx.slots.entries('sidebar.workspaces')) {
             if (entries.has(entry) || !entry.children?.['sidebar.workspaces.directoryFlow'] || typeof entry.component !== 'function') continue;
             const Native = entry.component;
-            const orderSync = installSessionOrderSync(ctx, entry, { signal: stop.signal });
+            const orderSync = installSessionOrderSync(ctx, entry, { signal: stop.signal, carrier });
             function WorkspacePeers(props) {
               const useStore = (selector, equal) => props.useStore(value => selector(value.groupBy === 'workspace-tree' ? { ...value, groupBy: 'workspace' } : value), equal);
               const actions = orderSync.wrapActions(props.actions);

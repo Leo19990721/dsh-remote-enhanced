@@ -47,6 +47,9 @@
     "connectionConnectionTimeout": "Connection timed out. Check that the other computer is online and DSH is open, then try again.",
     "connectionAuthorizationRequired": "Open Remote Workbench to check sign-in and device access.",
     "connectionConnectionInterrupted": "The connection dropped. Check its status in Remote Workbench.",
-    "connectionConnectionFailed": "Could not connect. Check that the other computer is online and DSH is open."
+    "connectionConnectionFailed": "Could not connect. Check that the other computer is online and DSH is open.",
+    "sessionOrderUnsupported": "This computer does not support syncing session order. Your layout is kept in this view only.",
+    "sessionOrderDenied": "The Host did not allow session-order sync. Your layout is kept in this view only.",
+    "sessionOrderNotSynced": "Could not confirm session-order sync. Your layout is kept in this view; drag again after reconnecting."
   }
 }

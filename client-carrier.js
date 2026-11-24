@@ -151,6 +151,8 @@ export async function installSessionCarrier(ctx, { fetch: send = globalThis.fetc
   let disposed = false;
   return {
     get viewId() { return viewId; }, baseHost,
+    get canSyncWorkspaceOrder() { return !!registry.get('workspace/insertSessionBefore'); },
+    readWorkspaceOrder(workspaceId, signal) { return viewCall('workspaceOrderView', { workspaceId }, signal || active); },
     mediaUrl(sessionId, path) { return new URL('dsh-session-hosts/media?' + new URLSearchParams({ viewId, sessionId, path }), document.baseURI).href; },
     get canRevealSavedFile() { return !!registry.get('session/openWorkspacePath'); },
     async revealSavedFile(path, signal) {
